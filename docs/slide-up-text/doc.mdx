@@ -117,6 +117,12 @@ import { SlideUpText } from "@/components/slide-up-text";
         name: "onComplete",
         type: "() => void",
         nameDetails: "Callback when animation completes"
+      },
+      {
+        name: "inView",
+        type: "boolean",
+        default: "false",
+        nameDetails: "Whether to trigger animation only when element is in viewport"
       }
     ]}
   />

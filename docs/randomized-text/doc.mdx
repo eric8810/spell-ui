@@ -58,16 +58,22 @@ import { RandomizedText } from "@/components/randomized-text";
       nameDetails: "Additional CSS classes for the container"
     },
     {
-      name: "duration",
-      type: "number",
-      default: "0.75",
-      nameDetails: "Total animation duration in seconds"
+      name: "split",
+      type: "'words' | 'chars'",
+      default: "'words'",
+      nameDetails: "How to split the text for animation - by words or characters"
     },
     {
-      name: "split",
-      type: "'words' | 'characters'",
-      default: "'characters'",
-      nameDetails: "How to split the text for animation - by words or characters"
+      name: "delay",
+      type: "number",
+      default: "0.2",
+      nameDetails: "Base delay before animation starts"
+    },
+    {
+      name: "inView",
+      type: "boolean",
+      default: "false",
+      nameDetails: "Whether to trigger animation only when element is in viewport"
     }
   ]}
 />

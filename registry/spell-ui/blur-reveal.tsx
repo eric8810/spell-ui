@@ -1,6 +1,6 @@
 "use client";
-import { AnimatePresence, motion } from "motion/react";
-import React from "react";
+import { AnimatePresence, motion, useInView } from "motion/react";
+import React, { useRef } from "react";
 
 export interface BlurRevealProps {
   children: string;
@@ -13,6 +13,7 @@ export interface BlurRevealProps {
   onAnimationStart?: () => void;
   as?: keyof React.JSX.IntrinsicElements;
   style?: React.CSSProperties;
+  inView?: boolean;
 }
 
 export function BlurReveal({
@@ -26,7 +27,11 @@ export function BlurReveal({
   onAnimationStart,
   as = "p",
   style,
+  inView = false,
 }: BlurRevealProps) {
+  const containerRef = useRef(null);
+  const isInView = useInView(containerRef, { once: true, margin: "-100px" });
+  const shouldAnimate = inView ? isInView : trigger;
   const MotionTag = motion[as as keyof typeof motion] as typeof motion.div;
 
   const stagger = 0.03 / speedReveal;
@@ -64,8 +69,9 @@ export function BlurReveal({
 
   return (
     <AnimatePresence mode="popLayout">
-      {trigger && (
+      {shouldAnimate && (
         <MotionTag
+          ref={containerRef}
           initial="hidden"
           animate="visible"
           exit="exit"

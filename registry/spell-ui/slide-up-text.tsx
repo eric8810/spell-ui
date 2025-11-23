@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimationOptions, motion } from "motion/react";
+import { AnimationOptions, motion, useInView } from "motion/react";
 import {
   forwardRef,
   useCallback,
@@ -25,6 +25,7 @@ interface SlideUpTextProps {
   autoStart?: boolean;
   onStart?: () => void;
   onComplete?: () => void;
+  inView?: boolean;
 }
 
 export interface SlideUpTextRef {
@@ -55,6 +56,7 @@ const SlideUpText = forwardRef<SlideUpTextRef, SlideUpTextProps>(
       autoStart = true,
       onStart,
       onComplete,
+      inView = false,
       ...props
     },
     ref,
@@ -64,6 +66,8 @@ const SlideUpText = forwardRef<SlideUpTextRef, SlideUpTextProps>(
       ? children
       : children?.toString() || "";
     const [isAnimating, setIsAnimating] = useState(false);
+    const isInView = useInView(containerRef, { once: true, margin: "-100px" });
+    const shouldAnimate = inView ? isInView : true;
 
     const splitIntoCharacters = (text: string): string[] => {
       if (typeof Intl !== "undefined" && "Segmenter" in Intl) {
@@ -119,10 +123,10 @@ const SlideUpText = forwardRef<SlideUpTextRef, SlideUpTextProps>(
     }));
 
     useEffect(() => {
-      if (autoStart) {
+      if (autoStart && shouldAnimate) {
         startAnimation();
       }
-    }, [autoStart, startAnimation]);
+    }, [autoStart, shouldAnimate, startAnimation]);
 
     const variants = {
       hidden: { y: "100%" },

@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useInView } from "motion/react";
 
 interface SpecialTextProps {
   children: string;
   speed?: number;
   className?: string;
+  inView?: boolean;
 }
 
 const RANDOM_CHARS = "_!X$0-+*#";
@@ -22,7 +24,11 @@ export function SpecialText({
   children,
   speed = 20,
   className = "",
+  inView = false,
 }: SpecialTextProps) {
+  const containerRef = useRef<HTMLSpanElement>(null);
+  const isInView = useInView(containerRef, { once: true, margin: "-100px" });
+  const shouldAnimate = inView ? isInView : true;
   const text = children;
   const [displayText, setDisplayText] = useState<string>(
     " ".repeat(text.length),
@@ -91,6 +97,11 @@ export function SpecialText({
   };
 
   useEffect(() => {
+    if (!shouldAnimate) {
+      setDisplayText(text);
+      return;
+    }
+
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
@@ -108,7 +119,7 @@ export function SpecialText({
         clearInterval(intervalRef.current);
       }
     };
-  }, [currentPhase, animationStep, text, speed]);
+  }, [currentPhase, animationStep, text, speed, shouldAnimate]);
 
   useEffect(() => {
     setDisplayText(" ".repeat(text.length));
@@ -124,6 +135,7 @@ export function SpecialText({
 
   return (
     <span
+      ref={containerRef}
       className={`h-4.5 leading-5 inline-flex font-mono font-medium ${className}`}
     >
       {displayText}

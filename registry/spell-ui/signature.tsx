@@ -1,6 +1,6 @@
 "use client";
-import React, { useEffect, useId, useState } from "react";
-import { motion } from "motion/react";
+import React, { useEffect, useId, useState, useRef } from "react";
+import { motion, useInView } from "motion/react";
 import opentype from "opentype.js";
 
 export function Signature({
@@ -9,12 +9,14 @@ export function Signature({
   fontSize = 14,
   duration = 1.5,
   className,
+  inView = false,
 }: {
   text?: string;
   color?: string;
   fontSize?: number;
   duration?: number;
   className?: string;
+  inView?: boolean;
 }) {
   const [paths, setPaths] = useState<string[]>([]);
   const [width, setWidth] = useState<number>(300);
@@ -23,6 +25,9 @@ export function Signature({
   const topMargin = Math.max(5, (height - fontSize) / 2);
   const baseline = Math.min(height - 5, topMargin + fontSize);
   const maskId = `signature-reveal-${useId().replace(/:/g, "")}`;
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const shouldAnimate = inView ? isInView : true;
 
   useEffect(() => {
     async function load() {
@@ -75,6 +80,7 @@ export function Signature({
 
   return (
     <svg
+      ref={ref}
       width={width}
       height={height}
       viewBox={`0 0 ${width} ${height}`}
@@ -91,7 +97,7 @@ export function Signature({
               strokeWidth={fontSize * 0.22}
               fill="none"
               initial={{ pathLength: 0, opacity: 0 }}
-              animate={{ pathLength: 1, opacity: 1 }}
+              animate={shouldAnimate ? { pathLength: 1, opacity: 1 } : { pathLength: 0, opacity: 0 }}
               transition={{
                 pathLength: {
                   delay: i * 0.2,
