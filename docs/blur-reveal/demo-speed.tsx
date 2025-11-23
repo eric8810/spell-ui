@@ -6,19 +6,19 @@ export function Demo() {
       <div>
         <p className="font-mono text-sm text-muted-foreground">SLOW (0.5)</p>
         <BlurReveal className="tracking-tight text-2xl font-medium" speedReveal={0.5} inView>
-          You can just ship things
+          You can just ship things.
         </BlurReveal>
       </div>
       <div>
         <p className="font-mono text-sm text-muted-foreground">NORMAL (1.5)</p>
         <BlurReveal className="tracking-tight text-2xl font-medium" speedReveal={1.5} inView>
-          You can just ship things
+          You can just ship things.
         </BlurReveal>
       </div>
       <div>
         <p className="font-mono text-sm text-muted-foreground">FAST (2)</p>
         <BlurReveal className="tracking-tight text-2xl font-medium" speedReveal={2} inView>
-          You can just ship things
+          You can just ship things.
         </BlurReveal>
       </div>
     </div>
