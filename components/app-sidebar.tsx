@@ -65,6 +65,7 @@ export function AppSidebar({
             </SidebarGroupContent>
           </SidebarGroup>
         ))}
+        <div className="h-4 shrink-0" />
       </SidebarContent>
     </Sidebar>
   );
