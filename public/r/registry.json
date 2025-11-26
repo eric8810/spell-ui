@@ -80,10 +80,25 @@
       "category": "animation"
     },
     {
+      "name": "shimmer-text",
+      "type": "registry:component",
+      "title": "Shimmer Text",
+      "description": "Text with animated shimmer highlight effect.",
+      "files": [
+        {
+          "path": "registry/spell-ui/shimmer-text.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "dependencies": ["motion"],
+      "registryDependencies": [],
+      "category": "animation"
+    },
+    {
       "name": "highlighted-text",
       "type": "registry:component",
       "title": "Highlighted Text",
-      "description": "Text with animated shimmer highlight effect.",
+      "description": "Text with sliding background highlight animation using mix-blend-mode.",
       "files": [
         {
           "path": "registry/spell-ui/highlighted-text.tsx",
@@ -273,6 +288,21 @@
       "dependencies": ["motion"],
       "registryDependencies": [],
       "category": "animation"
+    },
+    {
+      "name": "pop-button",
+      "type": "registry:component",
+      "title": "Pop Button",
+      "description": "A playful 3D-style button with push-down animation effect.",
+      "files": [
+        {
+          "path": "registry/spell-ui/pop-button.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "dependencies": [],
+      "registryDependencies": [],
+      "category": "button"
     }
   ]
 }
