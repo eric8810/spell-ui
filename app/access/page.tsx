@@ -14,6 +14,7 @@ export default function EarlyAccessPage() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [exiting, setExiting] = useState(false);
   const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent) {
@@ -34,8 +35,11 @@ export default function EarlyAccessPage() {
       if (response.ok) {
         setSuccess(true);
         setTimeout(() => {
-          router.push("/docs/introduction");
-          router.refresh();
+          setExiting(true);
+          setTimeout(() => {
+            router.push("/docs/introduction");
+            router.refresh();
+          }, 400);
         }, 600);
       } else {
         setError("Invalid password");
@@ -50,7 +54,11 @@ export default function EarlyAccessPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
+    <motion.div
+      className="min-h-screen flex items-center justify-center px-4"
+      animate={exiting ? { scale: 1.5, opacity: 0 } : { scale: 1, opacity: 1 }}
+      transition={{ duration: 0.4, ease: "easeInOut" }}
+    >
       <div className="w-full max-w-xs space-y-6">
         <div className="text-center space-y-2">
           <div
@@ -105,6 +113,6 @@ export default function EarlyAccessPage() {
           </Button>
         </form>
       </div>
-    </div>
+    </motion.div>
   );
 }
