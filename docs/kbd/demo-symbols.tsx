@@ -6,7 +6,6 @@ export function Demo() {
       <Kbd keys={["command"]} listenToKeyboard />
       <Kbd keys={["control"]} listenToKeyboard />
       <Kbd keys={["alt"]} listenToKeyboard />
-      <Kbd keys={["space"]} listenToKeyboard />
       <Kbd keys={["up"]} listenToKeyboard />
       <Kbd keys={["down"]} listenToKeyboard />
       <Kbd keys={["left"]} listenToKeyboard />
