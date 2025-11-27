@@ -125,6 +125,31 @@ export default async function DocPage({
             )}
           </header>
           <Doc />
+
+          <nav className="not-prose flex items-center justify-between mt-12 pt-12 border-t">
+            {prevDoc ? (
+              <Link
+                href={`/docs/${prevDoc.id}`}
+                className="max-w-40 flex group flex-col font-medium items-start gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors ease-out duration-200"
+              >
+                <span className="transition-colors text-muted-foreground/75 group-hover:text-muted-foreground ease-out duration-200">Previous</span>
+                <span className="truncate">{prevDoc.title}</span>
+              </Link>
+            ) : (
+              <div />
+            )}
+            {nextDoc ? (
+              <Link
+                href={`/docs/${nextDoc.id}`}
+                className="max-w-40 flex group flex-col font-medium items-end gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors ease-out duration-200"
+              >
+                <span className="transition-colors text-muted-foreground/75 group-hover:text-muted-foreground ease-out duration-200">Next</span>
+                <span className="truncate">{nextDoc.title}</span>
+              </Link>
+            ) : (
+              <div />
+            )}
+          </nav>
         </article>
 
         <aside className="hidden xl:block sticky top-[90px] h-fit">
