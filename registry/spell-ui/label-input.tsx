@@ -58,11 +58,11 @@ const ringColorMap: Record<RingColor, string> = {
 };
 
 export function LabelInput({
-  label = "Your Email",
+  label = "",
   ringColor = "muted",
   containerClassName,
   className,
-  type = "email",
+  type = "text",
   placeholder = "",
   ...props
 }: LabelInputProps) {
@@ -73,13 +73,12 @@ export function LabelInput({
   const toggleVisibility = () => setIsVisible(!isVisible);
 
   return (
-    <div className={cn("group relative max-w-72 w-full", containerClassName)}>
+    <div className={cn("group relative w-full", className, containerClassName)}>
       <input
         className={cn(
           "block outline-none peer text-primary w-full px-3.5 h-10 text-sm rounded-lg border focus:ring-2 dark:bg-neutral-950 dark:border-neutral-700/75",
           isPasswordType && "pr-9",
           ringColorMap[ringColor],
-          className,
         )}
         placeholder={placeholder}
         type={inputType}
