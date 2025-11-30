@@ -117,7 +117,6 @@ export function Marquee({
             isPaused && "paused",
           )}
         >
-          {/* First set of items */}
           {items.map((item, index) => (
             <div
               key={`first-${index}`}
@@ -126,7 +125,6 @@ export function Marquee({
               {item}
             </div>
           ))}
-          {/* Duplicate set for seamless loop */}
           {items.map((item, index) => (
             <div
               key={`second-${index}`}

@@ -170,6 +170,21 @@
       "category": "feedback"
     },
     {
+      "name": "bars-spinner",
+      "type": "registry:component",
+      "title": "Bars Spinner",
+      "description": "A loading spinner with rotating bars animation.",
+      "files": [
+        {
+          "path": "registry/spell-ui/bars-spinner.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "dependencies": [],
+      "registryDependencies": [],
+      "category": "feedback"
+    },
+    {
       "name": "flow-button",
       "type": "registry:component",
       "title": "Flow Button",
