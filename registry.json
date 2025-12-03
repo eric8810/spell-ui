@@ -330,7 +330,22 @@
           "type": "registry:component"
         }
       ],
-      "dependencies": ["react-tweet"],
+      "dependencies": ["react-tweet", "@icons-pack/react-simple-icons"],
+      "registryDependencies": [],
+      "category": "display"
+    },
+    {
+      "name": "spotify-card",
+      "type": "registry:component",
+      "title": "Spotify Card",
+      "description": "Display Spotify tracks with album art and blurred background.",
+      "files": [
+        {
+          "path": "registry/spell-ui/spotify-card.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "dependencies": ["@icons-pack/react-simple-icons", "spotify-url-info"],
       "registryDependencies": [],
       "category": "display"
     }

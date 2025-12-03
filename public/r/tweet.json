@@ -5,7 +5,8 @@
   "title": "Tweet",
   "description": "Embed Twitter/X posts with custom styling.",
   "dependencies": [
-    "react-tweet"
+    "react-tweet",
+    "@icons-pack/react-simple-icons"
   ],
   "registryDependencies": [],
   "files": [
