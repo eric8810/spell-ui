@@ -73,7 +73,7 @@ const TweetSkeleton = ({ className }: { className?: string }) => (
         <div className="h-3 w-16 animate-pulse rounded bg-muted" />
       </div>
     </div>
-    <div className="mt-3 space-y-2">
+    <div className="mt-4 space-y-2">
       <div className="h-4 w-full animate-pulse rounded bg-muted" />
       <div className="h-4 w-3/4 animate-pulse rounded bg-muted" />
     </div>
@@ -156,9 +156,34 @@ const TweetBody = ({ tweet }: { tweet: EnrichedTweet }) => (
 const TweetMedia = ({ tweet }: { tweet: EnrichedTweet }) => {
   if (!tweet.video && !tweet.photos) return null;
 
+  const getVideoSource = () => {
+    if (!tweet.video?.variants) return null;
+
+    const getResolution = (url: string): number => {
+      const match = url.match(/\/(\d+)x(\d+)\//);
+      if (match) {
+        return parseInt(match[1]) * parseInt(match[2]);
+      }
+      return 0;
+    };
+
+    const mp4Variants = tweet.video.variants
+      .filter((v) => v.type === "video/mp4")
+      .sort((a, b) => getResolution(b.src) - getResolution(a.src));
+
+    if (mp4Variants.length > 0) {
+      return { src: mp4Variants[0].src, type: "video/mp4" };
+    }
+
+    const firstVariant = tweet.video.variants[0];
+    return { src: firstVariant.src, type: firstVariant.type };
+  };
+
+  const videoSource = getVideoSource();
+
   return (
     <div className="mt-4">
-      {tweet.video && (
+      {tweet.video && videoSource && (
         <video
           poster={tweet.video.poster}
           autoPlay
@@ -167,7 +192,7 @@ const TweetMedia = ({ tweet }: { tweet: EnrichedTweet }) => {
           playsInline
           className="w-full rounded-lg"
         >
-          <source src={tweet.video.variants[0].src} type="video/mp4" />
+          <source src={videoSource.src} type={videoSource.type} />
         </video>
       )}
       {tweet.photos && (
