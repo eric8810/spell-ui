@@ -30,7 +30,7 @@ export function DemoPresets() {
         ))}
       </div>
       <div className="relative z-10 flex-1 flex items-center justify-center">
-        <p className="text-4xl font-semibold tracking-tighter text-white">
+        <p className="text-4xl font-semibold tracking-tighter text-white mix-blend-exclusion">
           {activePreset}
         </p>
       </div>

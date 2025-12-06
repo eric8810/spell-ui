@@ -343,6 +343,7 @@ export default function AnimatedGradient({
       style={{
         position: "absolute",
         inset: 0,
+        zIndex: -1,
         borderRadius: radius,
         overflow: "hidden",
         ...style,

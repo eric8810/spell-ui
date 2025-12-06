@@ -241,6 +241,7 @@ export default function Rays({
       style={{
         position: "absolute",
         inset: 0,
+        zIndex: -1,
         borderRadius: radius,
         overflow: "hidden",
         backgroundColor,
