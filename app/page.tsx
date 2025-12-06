@@ -1,9 +1,7 @@
 import Check from "@/components/icons/check";
-import { HeroShowcase } from "@/components/hero-showcase";
 import SiteHeader from "@/components/site-header";
 import { getDocSchema } from "@/lib/doc";
 import { BlurReveal } from "@/registry/spell-ui/blur-reveal";
-// import Rays from "@/registry/spell-ui/light-rays";
 import { RichButton } from "@/registry/spell-ui/rich-button";
 import Link from "next/link";
 
