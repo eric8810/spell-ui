@@ -1,6 +1,7 @@
 import { Badge } from "@/registry/spell-ui/badge";
 import { allDocItems, getDoc, getDocSchema } from "@/lib/doc";
 import { ArrowLeft, ArrowRight, ExternalLink } from "lucide-react";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { DocsTableOfContents } from "@/components/toc";
 import { getTableOfContents } from "@/lib/toc";
@@ -9,6 +10,7 @@ import { join } from "path";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { DocCopySection } from "@/components/doc-copy-section";
+import { siteConfig } from "@/lib/config";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -17,6 +19,27 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const item = await getDoc(id);
+
+  if (!item) {
+    return {
+      title: siteConfig.name,
+      description: siteConfig.description,
+    };
+  }
+
+  return {
+    title: item.title,
+    description: item.description,
+  };
+}
 
 export default async function DocPage({
   params,

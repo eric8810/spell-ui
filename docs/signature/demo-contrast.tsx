@@ -6,7 +6,7 @@ export function DemoContrast() {
       <Signature
         text="Tomm."
         fontSize={16}
-        color="#F29900"
+        color="#0156FE"
       />
     </div>
   );
