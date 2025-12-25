@@ -80,11 +80,11 @@ export function Hero() {
           </div>
           <Link href="/docs/shimmer-text" className="text-sm leading-4 text-muted-foreground hover:text-foreground transition-colors">Shimmer Text</Link>
         </div>
-        <div className="col-span-1 md:col-span-2 rounded-2xl border shadow-inner min-h-[200px] md:min-h-[240px] flex flex-col p-4">
+        <div className="col-span-1 rounded-2xl border shadow-inner min-h-[200px] md:min-h-[240px] flex flex-col p-4">
           <div className="flex-1 flex items-center justify-center">
-            <SpotifyCardCarouselDemo />
+            <AnimatedCheckboxDemo />
           </div>
-          <Link href="/docs/spotify-card" className="text-sm leading-4 text-muted-foreground hover:text-foreground transition-colors">Spotify Card</Link>
+          <Link href="/docs/animated-checkbox" className="text-sm leading-4 text-muted-foreground hover:text-foreground transition-colors">Animated Checkbox</Link>
         </div>
         <div className="col-span-1 rounded-2xl border shadow-inner min-h-[200px] md:min-h-[240px] flex flex-col p-4 overflow-hidden">
           <div className="flex-1 flex items-center justify-center">
@@ -94,15 +94,15 @@ export function Hero() {
         </div>
         <div className="col-span-1 rounded-2xl border shadow-inner min-h-[200px] md:min-h-[240px] flex flex-col p-4">
           <div className="flex-1 flex items-center justify-center">
-            <AnimatedCheckboxDemo />
-          </div>
-          <Link href="/docs/animated-checkbox" className="text-sm leading-4 text-muted-foreground hover:text-foreground transition-colors">Animated Checkbox</Link>
-        </div>
-        <div className="col-span-1 rounded-2xl border shadow-inner min-h-[200px] md:min-h-[240px] flex flex-col p-4">
-          <div className="flex-1 flex items-center justify-center">
             <ColorSelectorDemo />
           </div>
           <Link href="/docs/color-selector" className="text-sm leading-4 text-muted-foreground hover:text-foreground transition-colors">Color Selector</Link>
+        </div>
+        <div className="col-span-1 md:col-span-2 rounded-2xl border shadow-inner min-h-[200px] md:min-h-[240px] flex flex-col p-4">
+          <div className="flex-1 flex items-center justify-center">
+            <SpotifyCardCarouselDemo />
+          </div>
+          <Link href="/docs/spotify-card" className="text-sm leading-4 text-muted-foreground hover:text-foreground transition-colors">Spotify Card</Link>
         </div>
       </div>
     </div>

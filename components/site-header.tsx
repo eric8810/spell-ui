@@ -15,7 +15,7 @@ export default function SiteHeader({ docSchema }: { docSchema?: DocSchema }) {
       <div className="flex justify-between w-full h-14 items-center gap-4 3xl:max-w-screen-2xl px-4 mx-auto">
         <div className="flex items-center gap-6">
           <div className="flex items-center">
-            {/* <SidebarTrigger className="md:hidden mr-1" /> */}
+            {/* <span className="size-[18px] rounded-none bg-purple-600 block transform-none mr-1.5"></span> */} {/* logo?? */}
             <Link href={"/"}>
               <h1 className="font-medium" translate="no">Spell UI</h1>
             </Link>
