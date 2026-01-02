@@ -423,6 +423,21 @@
       "dependencies": [],
       "registryDependencies": [],
       "category": "animation"
+    },
+    {
+      "name": "logos-carousel",
+      "type": "registry:component",
+      "title": "Logos Carousel",
+      "description": "Animated carousel component that cycles through sets of logos with staggered animations.",
+      "files": [
+        {
+          "path": "registry/spell-ui/logos-carousel.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "dependencies": [],
+      "registryDependencies": [],
+      "category": "display"
     }
   ]
 }
