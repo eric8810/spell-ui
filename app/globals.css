@@ -177,7 +177,7 @@ summary {
 }
 
 .prose h1 {
-  color: #000;
+  color: var(--primary);
 }
 
 .prose h2:has(.subheading-anchor),
