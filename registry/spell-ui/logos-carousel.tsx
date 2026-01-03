@@ -8,7 +8,6 @@ export interface LogosCarouselProps {
   stagger?: number;
   count?: number;
   className?: string;
-  gap?: number;
   duration?: number;
   interval?: number;
   initialDelay?: number;
@@ -19,7 +18,6 @@ export function LogosCarousel({
   stagger = 0.14,
   count,
   className,
-  gap = 10,
   duration = 600,
   interval = 2500,
   initialDelay = 500,
@@ -102,10 +100,7 @@ export function LogosCarousel({
         }
       `}</style>
       <div
-        className={cn(
-          "max-w-[720px] grid place-items-center w-full",
-          className,
-        )}
+        className="max-w-[720px] grid place-items-center w-full"
       >
         {groups.map((group, groupIndex) => {
           const isCurrent = groupIndex === index;
@@ -115,10 +110,12 @@ export function LogosCarousel({
           return (
             <div
               key={groupIndex}
-              className="flex w-full justify-center"
+              className={cn(
+                "flex w-full justify-center gap-10",
+                className
+              )}
               style={{ 
                 gridArea: "1 / 1", 
-                gap: `${gap * 0.25}rem`,
                 pointerEvents: isVisible ? "auto" : "none",
               }}
             >

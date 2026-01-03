@@ -24,7 +24,7 @@ const logos = [
 
 export function Demo() {
   return (
-    <LogosCarousel count={4}>
+    <LogosCarousel count={4} className="gap-6 sm:gap-10">
       {logos.map((logo) => (
         <Image
           key={logo.src}
