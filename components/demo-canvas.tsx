@@ -33,13 +33,13 @@ export function DemoCanvas({
         <TabsList className="bg-transparent">
           <TabsTrigger
             value="preview"
-            className="rounded-md cursor-pointer data-[state=active]:bg-white px-2 text-center data-[state=active]:shadow-[0_0_0_1px_rgba(0,0,0,.08),_0px_2px_2px_rgba(0,0,0,.04)] data-[state=active]:dark:bg-[#0B0B09]"
+            className="rounded-md cursor-pointer data-selected:bg-white px-2 text-center data-selected:shadow-[0_0_0_1px_rgba(0,0,0,.08),_0px_2px_2px_rgba(0,0,0,.04)] data-selected:dark:bg-[#0B0B09]"
           >
             Preview
           </TabsTrigger>
           <TabsTrigger
             value="code"
-            className="rounded-md cursor-pointer data-[state=active]:bg-white px-2 text-center data-[state=active]:shadow-[0_0_0_1px_rgba(0,0,0,.08),_0px_2px_2px_rgba(0,0,0,.04)] data-[state=active]:dark:bg-[#0B0B09]"
+            className="rounded-md cursor-pointer data-selected:bg-white px-2 text-center data-selected:shadow-[0_0_0_1px_rgba(0,0,0,.08),_0px_2px_2px_rgba(0,0,0,.04)] data-selected:dark:bg-[#0B0B09]"
           >
             Code
           </TabsTrigger>

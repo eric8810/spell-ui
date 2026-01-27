@@ -68,25 +68,25 @@ export function CodeBlockCommand(
           <TabsList className="h-auto bg-transparent p-0" translate="no">
             <TabsTrigger
               value="pnpm"
-              className="h-auto rounded-sm px-2 py-1 text-xs font-mono data-[state=active]:bg-background data-[state=active]:border data-[state=active]:border-border"
+              className="h-auto rounded-sm px-2 py-1 text-xs font-mono data-selected:bg-background data-selected:border data-selected:border-border"
             >
               pnpm
             </TabsTrigger>
             <TabsTrigger
               value="npm"
-              className="h-auto rounded-sm px-2 py-1 text-xs font-mono data-[state=active]:bg-background data-[state=active]:border data-[state=active]:border-border"
+              className="h-auto rounded-sm px-2 py-1 text-xs font-mono data-selected:bg-background data-selected:border data-selected:border-border"
             >
               npm
             </TabsTrigger>
             <TabsTrigger
               value="yarn"
-              className="h-auto rounded-sm px-2 py-1 text-xs font-mono data-[state=active]:bg-background data-[state=active]:border data-[state=active]:border-border"
+              className="h-auto rounded-sm px-2 py-1 text-xs font-mono data-selected:bg-background data-selected:border data-selected:border-border"
             >
               yarn
             </TabsTrigger>
             <TabsTrigger
               value="bun"
-              className="h-auto rounded-sm px-2 py-1 text-xs font-mono data-[state=active]:bg-background data-[state=active]:border data-[state=active]:border-border"
+              className="h-auto rounded-sm px-2 py-1 text-xs font-mono data-selected:bg-background data-selected:border data-selected:border-border"
             >
               bun
             </TabsTrigger>
