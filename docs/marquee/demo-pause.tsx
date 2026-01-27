@@ -1,6 +1,5 @@
-import { Avatar } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Marquee } from "@/registry/spell-ui/marquee";
-import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 
 const users = [
   { id: "alice", name: "Alice", role: "Product Manager", initials: "AL" },
