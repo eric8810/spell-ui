@@ -124,7 +124,7 @@ export default async function DocPage({
                 <DocCopySection content={rawContent} url={`/docs/${id}`} />
                 <Button
                   variant="secondary"
-                  className="rounded-full size-8 shadow-none active:scale-[0.97] will-change-transform ease-out duration-300 transition-colors"
+                  className="rounded-full size-8 shadow-none active:scale-[0.97] will-change-transform ease-out duration-150 transition-transform"
                   size="icon"
                   disabled={!prevDoc}
                   asChild={!!prevDoc}
