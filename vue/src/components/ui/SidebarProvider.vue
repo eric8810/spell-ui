@@ -22,6 +22,7 @@ import { provide, ref, computed } from 'vue'
 import { useIsMobile } from '@/composables/use-mobile'
 import { cn } from '@/lib/utils'
 import TooltipProvider from './TooltipProvider.vue'
+import { SIDEBAR_INJECTION_KEY, type SidebarContextProps } from '@/composables/useSidebar'
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state'
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -68,7 +69,7 @@ const setOpenMobile = (value: boolean) => {
   openMobile.value = value
 }
 
-provide('sidebar', {
+provide(SIDEBAR_INJECTION_KEY, {
   state,
   open,
   setOpen: (value: boolean) => { open.value = value },
@@ -76,7 +77,7 @@ provide('sidebar', {
   setOpenMobile,
   isMobile,
   toggleSidebar
-})
+} as SidebarContextProps)
 
 defineOptions({
   inheritAttrs: false

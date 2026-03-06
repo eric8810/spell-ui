@@ -1,6 +1,6 @@
 # Vue 3 组件迁移完成报告
 
-## 已完成迁移的组件 (4/7)
+## 已完成迁移的组件 (5/7)
 
 ### 1. ✅ NativeSelect (3个文件)
 - NativeSelect.vue
@@ -51,9 +51,38 @@
 **依赖**: radix-vue 的 DropdownMenu 组件
 **特点**: 完整的下拉菜单系统，支持子菜单、复选框、单选框
 
-## 待完成组件 (3/7)
+### 5. ✅ Sidebar (24个文件)
+- SidebarProvider.vue
+- Sidebar.vue
+- SidebarContent.vue
+- SidebarFooter.vue
+- SidebarGroup.vue
+- SidebarGroupAction.vue
+- SidebarGroupContent.vue
+- SidebarGroupLabel.vue
+- SidebarHeader.vue
+- SidebarInput.vue
+- SidebarInset.vue
+- SidebarMenu.vue
+- SidebarMenuAction.vue
+- SidebarMenuBadge.vue
+- SidebarMenuButton.vue
+- SidebarMenuItem.vue
+- SidebarMenuSkeleton.vue
+- SidebarMenuSub.vue
+- SidebarMenuSubButton.vue
+- SidebarMenuSubItem.vue
+- SidebarRail.vue
+- SidebarSeparator.vue
+- SidebarTrigger.vue
+- useSidebar.ts (composable)
 
-### 5. ⏳ Autocomplete
+**依赖**: radix-vue 的 Sheet 组件, class-variance-authority
+**特点**: 复杂的侧边栏系统，支持响应式布局、移动端适配、多种变体和折叠模式
+
+## 待完成组件 (2/7)
+
+### 6. ⏳ Autocomplete
 **状态**: 未完成
 **原因**: 依赖 @base-ui/react/autocomplete，Vue 生态无直接对应
 **建议方案**:
@@ -61,7 +90,7 @@
 - 或使用 radix-vue 的 Combobox (如果有)
 - 或基于 Popover + Input 自行实现
 
-### 6. ⏳ Command
+### 7. ⏳ Command
 **状态**: 未完成
 **原因**: 依赖 Autocomplete 和 @base-ui/react/dialog
 **建议方案**:
@@ -69,40 +98,15 @@
 - 使用 radix-vue 的 Dialog 替代 @base-ui/react/dialog
 - 实现键盘导航和搜索过滤逻辑
 
-### 7. ⏳ Sidebar
-**状态**: 部分完成 (仅 SidebarProvider)
-**原因**: 组件极其复杂 (700+ 行)，包含19个子组件
-**已创建**:
-- SidebarProvider.vue
-- use-mobile.ts composable
+### 已删除
 
-**待创建** (18个):
-- Sidebar.vue
-- SidebarTrigger.vue
-- SidebarRail.vue
-- SidebarInset.vue
-- SidebarInput.vue
-- SidebarHeader.vue
-- SidebarFooter.vue
-- SidebarSeparator.vue
-- SidebarContent.vue
-- SidebarGroup.vue
-- SidebarGroupLabel.vue
-- SidebarGroupAction.vue
-- SidebarGroupContent.vue
-- SidebarMenu.vue
-- SidebarMenuItem.vue
-- SidebarMenuButton.vue
-- SidebarMenuAction.vue
-- SidebarMenuBadge.vue
-- SidebarMenuSkeleton.vue
-- SidebarMenuSub.vue
-- SidebarMenuSubItem.vue
-- SidebarMenuSubButton.vue
+### 8. ❌ Sidebar
+**状态**: 已完成 ✅
+**原因**: 已在第5项完成所有24个子组件的迁移
 
 ## 统计
 
-- ✅ 已完成: 26个组件文件
+- ✅ 已完成: 50个组件文件
 - ⏳ 待完成: 约40+个组件文件
 - 📦 已更新: index.ts (添加了26个导出)
 
