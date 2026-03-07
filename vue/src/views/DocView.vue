@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, watch } from 'vue'
+import { computed, nextTick, watch } from 'vue'
 import { ArrowLeft, ArrowRight, ExternalLink } from 'lucide-vue-next'
 import {
   Breadcrumb,
@@ -16,7 +16,7 @@ import DocsTableOfContents from '@/components/docs/DocsTableOfContents.vue'
 import ReactIsland from '@/components/docs/ReactIsland.vue'
 import { allDocItems, getDocById, getDocSchema } from '@/lib/doc'
 import { getTableOfContents } from '@/lib/toc'
-import { navigate, useRoute } from '@/router'
+import { navigate, routeSection, useRoute } from '@/router'
 import type { TocItem } from '@/lib/types'
 import { ref } from 'vue'
 
@@ -37,6 +37,37 @@ const isGettingStarted = computed(() => (docId.value ? gettingStartedIds.has(doc
 const docComponent = ref<any>(null)
 const rawContent = ref('')
 const toc = ref<TocItem[]>([])
+
+const waitForSectionElement = async (section: string) => {
+  for (let attempt = 0; attempt < 10; attempt += 1) {
+    await nextTick()
+
+    const element = document.getElementById(section)
+    if (element) {
+      return element
+    }
+
+    await new Promise<void>((resolve) => {
+      window.requestAnimationFrame(() => resolve())
+    })
+  }
+
+  return null
+}
+
+const scrollToCurrentSection = async () => {
+  const section = routeSection.value
+
+  if (!section || typeof window === 'undefined') {
+    return
+  }
+
+  const element = await waitForSectionElement(section)
+  element?.scrollIntoView({
+    block: 'start',
+    behavior: 'smooth',
+  })
+}
 
 watch(
   () => docId.value,
@@ -61,8 +92,17 @@ watch(
     docComponent.value = module
     rawContent.value = sourceModule.default ?? ''
     toc.value = await getTableOfContents(rawContent.value)
+
+    await scrollToCurrentSection()
   },
   { immediate: true },
+)
+
+watch(
+  () => routeSection.value,
+  () => {
+    void scrollToCurrentSection()
+  },
 )
 </script>
 

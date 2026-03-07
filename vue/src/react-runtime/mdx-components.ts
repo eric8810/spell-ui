@@ -4,8 +4,10 @@ import * as DemoCanvasModule from '@react/components/demo-canvas'
 import * as InstallationTabsModule from '@react/components/installation-tabs'
 import * as PropsTableModule from '@react/components/props-table'
 import * as CopyCodeButtonModule from '@react/components/copy-code-button'
+import { navigateTo, toInternalHref } from '@/react-shims/navigation'
 
 type MdxComponentMap = Record<string, any>
+type AnchorClickEvent = Parameters<NonNullable<ComponentPropsWithoutRef<'a'>['onClick']>>[0]
 
 const { DemoCanvas, DemoCode, DemoPreview } = DemoCanvasModule as any
 const { InstallationTabs } = InstallationTabsModule as any
@@ -41,13 +43,34 @@ export const useMDXComponents = (components: MdxComponentMap = {}) => ({
   a: ({
     children,
     href,
+    onClick,
     ...props
   }: ComponentPropsWithoutRef<'a'> & { children?: ReactNode }) =>
     createElement(
       'a',
       {
-        href,
+        href: href ? toInternalHref(href) : href,
         target: href?.startsWith('http') ? '_blank' : undefined,
+        onClick: (event) => {
+          onClick?.(event as AnchorClickEvent)
+
+          if (
+            !href ||
+            event.defaultPrevented ||
+            event.metaKey ||
+            event.ctrlKey ||
+            event.shiftKey ||
+            event.altKey ||
+            href.startsWith('http') ||
+            href.startsWith('mailto:') ||
+            href.startsWith('tel:')
+          ) {
+            return
+          }
+
+          event.preventDefault()
+          navigateTo(href)
+        },
         ...props,
       },
       children,

@@ -1,8 +1,8 @@
 import { getDocSchema } from "@/lib/doc";
 import Link from "next/link";
 
-export async function ComponentsGrid() {
-  const schema = await getDocSchema();
+export function ComponentsGrid() {
+  const schema = getDocSchema();
   const componentsSection = schema.find((section) => section.title === "Components");
   const components = componentsSection?.items ?? [];
 

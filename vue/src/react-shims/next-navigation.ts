@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react'
-import { navigateTo } from './navigation'
+import { navigateTo, readCurrentPath } from './navigation'
 
-const readPathname = () => window.location.pathname
+const readPathname = () => readCurrentPath()
 
 export const usePathname = () => {
   const [pathname, setPathname] = useState(readPathname)
 
   useEffect(() => {
     const update = () => setPathname(readPathname())
-    window.addEventListener('popstate', update)
+    window.addEventListener('hashchange', update)
     window.addEventListener('spell-ui:navigate', update)
     return () => {
-      window.removeEventListener('popstate', update)
+      window.removeEventListener('hashchange', update)
       window.removeEventListener('spell-ui:navigate', update)
     }
   }, [])
@@ -21,4 +21,5 @@ export const usePathname = () => {
 
 export const useRouter = () => ({
   push: (href: string) => navigateTo(href),
+  replace: (href: string) => navigateTo(href),
 })

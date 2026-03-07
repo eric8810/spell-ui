@@ -21,8 +21,8 @@ const filterRegistryItems = (items: RegistryItem[]) => {
   };
 };
 
-export const getDocSchema = async () => {
-  const { items } = await getRegistry();
+export const getDocSchema = () => {
+  const { items } = getRegistry();
   const { componentItems } = filterRegistryItems(items);
 
   const schema: DocSchema = [
@@ -36,12 +36,6 @@ export const getDocSchema = async () => {
   return schema;
 };
 
-export const allDocItems = async () => {
-  const schema = await getDocSchema();
-  return schema.flatMap((section) => section.items);
-};
+export const allDocItems = () => getDocSchema().flatMap((section) => section.items);
 
-export const getDoc = async (id: string) => {
-  const allItems = await allDocItems();
-  return allItems.find((item) => item.id === id);
-};
+export const getDoc = (id: string) => allDocItems().find((item) => item.id === id);

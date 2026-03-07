@@ -6,15 +6,8 @@ import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 
 const nextConfig = {
+  output: 'export' as const,
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
-  rewrites: async () => {
-    return [
-      {
-        source: "/docs/:slug.md",
-        destination: "/docs/:slug/md",
-      },
-    ];
-  },
 };
 
 const withMDX = createMDX({

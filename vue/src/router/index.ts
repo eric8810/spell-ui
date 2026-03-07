@@ -1,15 +1,13 @@
 import { computed, readonly, ref, type ComputedRef } from 'vue'
 import type { RouteMatch } from './routes'
+import {
+  buildHashHref,
+  isExternalHref,
+  parseHashLocation,
+  resolveInternalHref,
+} from '@/lib/routing'
 
 const NAVIGATION_EVENT = 'spell-ui:navigate'
-
-const normalizePath = (value: string) => {
-  const path = value.replace(/^#/, '').replace(/[?#].*$/, '') || '/'
-  if (path.length > 1 && path.endsWith('/')) {
-    return path.slice(0, -1)
-  }
-  return path
-}
 
 const matchRoute = (path: string): RouteMatch => {
   if (path === '/') {
@@ -32,22 +30,29 @@ const matchRoute = (path: string): RouteMatch => {
   return { name: 'not-found' }
 }
 
-const getHashPath = () => {
+const getLocationState = () => {
   if (typeof window === 'undefined') {
-    return '/'
+    return {
+      path: '/',
+      section: null,
+    }
   }
-  const hash = window.location.hash || '#/'
-  return normalizePath(hash)
+
+  return parseHashLocation(window.location.hash || '#/')
 }
 
-const currentPath = ref(getHashPath())
+const initialLocationState = getLocationState()
+const currentPath = ref(initialLocationState.path)
+const currentSection = ref(initialLocationState.section)
 
 export const routeState: ComputedRef<RouteMatch> = computed(() =>
   matchRoute(currentPath.value),
 )
 
 const syncFromLocation = () => {
-  currentPath.value = getHashPath()
+  const nextState = getLocationState()
+  currentPath.value = nextState.path
+  currentSection.value = nextState.section
 }
 
 export const installRouter = () => {
@@ -65,27 +70,34 @@ export const installRouter = () => {
   window.addEventListener(NAVIGATION_EVENT, syncFromLocation)
 }
 
-export const navigate = (to: string, options: { replace?: boolean } = {}) => {
+export const navigate = (
+  to: string,
+  options: { replace?: boolean; section?: string | null } = {},
+) => {
   if (typeof window === 'undefined') {
     return
   }
 
-  const path = normalizePath(to)
-  const hashPath = '#' + (path.startsWith('/') ? path : '/' + path)
+  const hashPath = buildHashHref(to, { section: options.section ?? null })
 
   if (options.replace) {
-    window.location.replace(hashPath)
+    window.history.replaceState({}, '', hashPath)
   } else {
     window.location.hash = hashPath
   }
 
-  currentPath.value = normalizePath(path)
+  const nextState = parseHashLocation(hashPath)
+  currentPath.value = nextState.path
+  currentSection.value = nextState.section
   window.dispatchEvent(new Event(NAVIGATION_EVENT))
 }
 
 export const useRoute = () => readonly(routeState)
+export const routeSection = readonly(currentSection)
 
-export const isExternalLink = (href: string) =>
-  /^([a-z]+:)?\/\//i.test(href) || href.startsWith('mailto:') || href.startsWith('tel:')
+export const isExternalLink = isExternalHref
 
 export const getCurrentPath = () => currentPath.value
+export const getCurrentSection = () => currentSection.value
+export const toInternalHref = (href: string, options: { section?: string | null } = {}) =>
+  resolveInternalHref(options.section ? buildHashHref(href, options) : href, currentPath.value)

@@ -1,5 +1,5 @@
 import { createElement } from 'react'
-import { navigateTo } from './navigation'
+import { navigateTo, toInternalHref } from './navigation'
 
 type LinkProps = {
   href: string
@@ -11,16 +11,27 @@ type LinkProps = {
   onClick?: (event: MouseEvent) => void
 }
 
-const isExternal = (href: string) => /^([a-z]+:)?\/\//i.test(href) || href.startsWith('mailto:')
+const isExternal = (href: string) =>
+  /^([a-z]+:)?\/\//i.test(href) || href.startsWith('mailto:') || href.startsWith('tel:')
 
 export default function Link({ href, onClick, target, ...props }: LinkProps) {
+  const resolvedHref = isExternal(href) ? href : toInternalHref(href)
+
   return createElement('a', {
-    href,
+    href: resolvedHref,
     target,
     ...props,
     onClick: (event: MouseEvent) => {
       onClick?.(event)
-      if (event.defaultPrevented || target === '_blank' || isExternal(href)) {
+      if (
+        event.defaultPrevented ||
+        target === '_blank' ||
+        isExternal(href) ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey
+      ) {
         return
       }
 

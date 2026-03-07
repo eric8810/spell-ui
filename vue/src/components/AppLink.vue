@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { isExternalLink, navigate } from '@/router'
+import { isExternalLink, navigate, toInternalHref } from '@/router'
 import { cn } from '@/lib/utils'
 
 interface Props {
@@ -11,10 +11,19 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const external = computed(() => isExternalLink(props.to) || props.target === '_blank')
+const external = computed(() => isExternalLink(props.to))
+const href = computed(() => (external.value ? props.to : toInternalHref(props.to)))
 
 const handleClick = (event: MouseEvent) => {
-  if (external.value || event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey) {
+  if (
+    external.value ||
+    props.target === '_blank' ||
+    event.defaultPrevented ||
+    event.metaKey ||
+    event.ctrlKey ||
+    event.shiftKey ||
+    event.altKey
+  ) {
     return
   }
 
@@ -25,7 +34,7 @@ const handleClick = (event: MouseEvent) => {
 
 <template>
   <a
-    :href="to"
+    :href="href"
     :target="target"
     :rel="target === '_blank' ? 'noopener noreferrer' : undefined"
     :class="cn(props.class)"

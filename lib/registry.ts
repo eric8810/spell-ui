@@ -1,12 +1,7 @@
+import registryData from "@/registry.json";
 import { Registry } from "./types";
 
-export const getRegistry = async (): Promise<Registry> => {
-  const registryData = await import("@/registry.json");
-  const registry = registryData.default as Registry;
-  return registry;
-};
+export const getRegistry = (): Registry => registryData as Registry;
 
-export const getRegistryItem = async (name: string) => {
-  const registry = await getRegistry();
-  return registry.items.find((item) => item.name === name);
-};
+export const getRegistryItem = (name: string) =>
+  getRegistry().items.find((item) => item.name === name);

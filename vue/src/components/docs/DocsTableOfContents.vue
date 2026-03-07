@@ -5,6 +5,7 @@ import { Separator } from '@/components/ui'
 import { siteConfig } from '@/lib/config'
 import { cn } from '@/lib/utils'
 import type { TocItem } from '@/lib/types'
+import { navigate, toInternalHref } from '@/router'
 
 const props = defineProps<{
   toc: TocItem[]
@@ -16,6 +17,30 @@ const activeHeading = ref<string | null>(null)
 let observer: IntersectionObserver | null = null
 
 const itemIds = computed(() => props.toc.map((item) => item.url.replace('#', '')))
+
+const getTocHref = (url: string) => {
+  const section = url.replace('#', '')
+
+  if (!props.docId || !section) {
+    return url
+  }
+
+  return toInternalHref(`/docs/${props.docId}`, { section })
+}
+
+const goToSection = (url: string) => {
+  const section = url.replace('#', '')
+
+  if (!props.docId || !section) {
+    return
+  }
+
+  navigate(`/docs/${props.docId}`, { section })
+  document.getElementById(section)?.scrollIntoView({
+    block: 'start',
+    behavior: 'smooth',
+  })
+}
 
 const connectObserver = () => {
   observer?.disconnect()
@@ -58,7 +83,7 @@ onBeforeUnmount(() => {
     <a
       v-for="item in props.toc"
       :key="item.url"
-      :href="item.url"
+      :href="getTocHref(item.url)"
       :class="
         cn(
           'text-[0.9rem] text-muted-foreground no-underline transition-colors hover:text-foreground',
@@ -67,6 +92,7 @@ onBeforeUnmount(() => {
           item.depth >= 4 && 'pl-6',
         )
       "
+      @click.prevent="goToSection(item.url)"
     >
       {{ item.title }}
     </a>
