@@ -7,7 +7,6 @@ interface Props {
   defaultChecked?: boolean
   modelValue?: boolean
   class?: string
-  onCheckedChange?: (checked: boolean) => void
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -22,6 +21,7 @@ const emit = defineEmits<{
 
 const slots = useSlots()
 const checked = ref(props.modelValue ?? props.defaultChecked)
+const isControlled = computed(() => props.modelValue !== undefined)
 
 watch(
   () => props.modelValue,
@@ -32,14 +32,22 @@ watch(
   },
 )
 
+watch(
+  () => props.defaultChecked,
+  (value) => {
+    if (!isControlled.value) {
+      checked.value = value
+    }
+  },
+)
+
 const toggle = () => {
   const nextChecked = !checked.value
 
-  if (props.modelValue === undefined) {
+  if (!isControlled.value) {
     checked.value = nextChecked
   }
 
-  props.onCheckedChange?.(nextChecked)
   emit('update:modelValue', nextChecked)
   emit('checkedChange', nextChecked)
 }
@@ -50,7 +58,12 @@ const showSlot = computed(() => Boolean(slots.default))
 <template>
   <div
     :class="cn('flex cursor-pointer items-center gap-3 select-none', props.class)"
+    role="checkbox"
+    tabindex="0"
+    :aria-checked="checked"
     @click="toggle"
+    @keydown.enter.prevent="toggle"
+    @keydown.space.prevent="toggle"
   >
     <div
       :class="

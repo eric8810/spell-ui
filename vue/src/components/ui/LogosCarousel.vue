@@ -24,7 +24,6 @@ const props = withDefaults(defineProps<Props>(), {
 
 const slots = useSlots()
 const index = ref(0)
-const nextIndex = ref(1)
 const animate = ref(false)
 
 let startTimer: number | null = null
@@ -34,15 +33,23 @@ let isMounted = false
 type VNodeChildGroup = VNode[]
 
 const children = computed(() => flattenVNodes((slots.default?.() ?? []) as VNode[]))
+const logosPerGroup = computed(() => {
+  const rawCount = props.count ?? children.value.length
+
+  if (rawCount > 0) {
+    return Math.floor(rawCount)
+  }
+
+  return Math.max(children.value.length, 1)
+})
 
 const groups = computed(() => {
-  const logosPerGroup = props.count || children.value.length
   const result: VNodeChildGroup[] = []
 
-  for (let currentIndex = 0; currentIndex < children.value.length; currentIndex += logosPerGroup) {
+  for (let currentIndex = 0; currentIndex < children.value.length; currentIndex += logosPerGroup.value) {
     result.push(
       children.value
-        .slice(currentIndex, currentIndex + logosPerGroup)
+        .slice(currentIndex, currentIndex + logosPerGroup.value)
         .map((child, childIndex) => cloneVNodeWithKey(child, `logos-${currentIndex}-${childIndex}`)),
     )
   }
@@ -51,6 +58,13 @@ const groups = computed(() => {
 })
 
 const groupsLength = computed(() => groups.value.length)
+const nextIndex = computed(() => {
+  if (groupsLength.value <= 1) {
+    return index.value
+  }
+
+  return (index.value + 1) % groupsLength.value
+})
 
 const clearTimers = () => {
   if (startTimer !== null) {
@@ -89,18 +103,39 @@ const syncLoop = () => {
     intervalTimer = null
   }
 
-  if (!animate.value || groupsLength.value === 0) {
+  if (!animate.value || groupsLength.value <= 1) {
     return
   }
 
   intervalTimer = window.setInterval(() => {
-    const newIndex = (index.value + 1) % groupsLength.value
-    index.value = newIndex
-    nextIndex.value = (newIndex + 1) % groupsLength.value
+    index.value = (index.value + 1) % groupsLength.value
   }, props.interval)
 }
 
-const getLogoStyle = (shouldAnimate: boolean, logoIndex: number, state: 'enter' | 'exit') => {
+const isCurrentGroup = (groupIndex: number) => groupIndex === index.value
+
+const isNextGroup = (groupIndex: number) =>
+  animate.value && groupsLength.value > 1 && groupIndex === nextIndex.value
+
+const isVisibleGroup = (groupIndex: number) =>
+  isCurrentGroup(groupIndex) || isNextGroup(groupIndex)
+
+const getGroupStyle = (groupIndex: number) => {
+  const visible = isVisibleGroup(groupIndex)
+
+  return {
+    gridArea: '1 / 1',
+    pointerEvents: visible ? 'auto' : 'none',
+    visibility: visible ? 'visible' : 'hidden',
+    opacity: visible ? 1 : 0,
+  } as const
+}
+
+const getLogoStyle = (groupIndex: number, logoIndex: number) => {
+  const current = isCurrentGroup(groupIndex)
+  const shouldAnimate = animate.value && groupsLength.value > 1 && isVisibleGroup(groupIndex)
+  const state = current ? 'exit' : 'enter'
+
   const style = {
     animationDelay: `${logoIndex * props.stagger}s`,
     animationDuration: `${props.duration}ms`,
@@ -110,7 +145,7 @@ const getLogoStyle = (shouldAnimate: boolean, logoIndex: number, state: 'enter' 
   if (!shouldAnimate) {
     return {
       ...style,
-      opacity: state === 'enter' ? 0 : 1,
+      opacity: current ? 1 : 0,
     }
   }
 
@@ -132,6 +167,19 @@ onBeforeUnmount(() => {
   clearTimers()
 })
 
+watch(groupsLength, (value) => {
+  if (value === 0) {
+    index.value = 0
+    animate.value = false
+    clearTimers()
+    return
+  }
+
+  if (index.value >= value) {
+    index.value = 0
+  }
+})
+
 watch(
   () => props.initialDelay,
   () => {
@@ -150,15 +198,12 @@ watch([animate, () => props.interval, groupsLength], () => {
       v-for="(group, groupIndex) in groups"
       :key="`group-${groupIndex}`"
       :class="cn('flex w-full justify-center gap-10', props.class)"
-      :style="{
-        gridArea: '1 / 1',
-        pointerEvents: groupIndex === index || (groupIndex === nextIndex && animate) ? 'auto' : 'none',
-      }"
+      :style="getGroupStyle(groupIndex)"
     >
       <div
         v-for="(logo, logoIndex) in group"
         :key="`logo-${groupIndex}-${logoIndex}`"
-        :style="getLogoStyle(animate && (groupIndex === index || groupIndex === nextIndex), logoIndex, groupIndex === index ? 'exit' : 'enter')"
+        :style="getLogoStyle(groupIndex, logoIndex)"
       >
         <VNodeRenderer :node="logo" :render-key="`logos-${groupIndex}-${logoIndex}`" />
       </div>
