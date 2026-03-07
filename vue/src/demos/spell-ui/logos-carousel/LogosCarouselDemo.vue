@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import LogosCarouselGroup from '@/demos/shared/LogosCarouselGroup.vue'
+import { LogosCarousel } from '@/components/ui'
 
 interface Props {
   variant?: 'default' | 'count'
@@ -45,9 +45,29 @@ const countLogos = [
   <div v-if="props.variant === 'count'" class="flex flex-col">
     <div>
       <p class="text-sm font-mono text-muted-foreground">3 LOGOS PER ROW</p>
-      <LogosCarouselGroup :logos="countLogos" :count="3" />
+      <LogosCarousel :count="3">
+        <img
+          v-for="logo in countLogos"
+          :key="logo.src"
+          :src="logo.src"
+          :alt="logo.alt"
+          width="96"
+          height="96"
+          class="pointer-events-none h-24 w-24 select-none object-contain opacity-70 not-dark:invert-100"
+        >
+      </LogosCarousel>
     </div>
   </div>
 
-  <LogosCarouselGroup v-else :logos="logos" :count="4" class="gap-6 sm:gap-10" />
+  <LogosCarousel v-else :count="4" class="gap-6 sm:gap-10">
+    <img
+      v-for="logo in logos"
+      :key="logo.src"
+      :src="logo.src"
+      :alt="logo.alt"
+      width="96"
+      height="96"
+      class="pointer-events-none h-24 w-24 select-none object-contain opacity-70 not-dark:invert-100"
+    >
+  </LogosCarousel>
 </template>

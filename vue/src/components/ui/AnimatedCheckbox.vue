@@ -57,11 +57,8 @@ const showSlot = computed(() => Boolean(slots.default))
 </script>
 
 <template>
-  <button
-    type="button"
-    role="checkbox"
-    :aria-checked="checked"
-    :class="cn('flex cursor-pointer items-center gap-3 select-none text-left', props.class)"
+  <div
+    :class="cn('flex cursor-pointer items-center gap-3 select-none', props.class)"
     @click="toggle"
   >
     <span
@@ -106,14 +103,13 @@ const showSlot = computed(() => Boolean(slots.default))
         <template v-else>{{ label }}</template>
       </span>
       <span
-        class="absolute left-0 top-1/2 h-[1.5px] -translate-y-1/2 bg-muted-foreground transition-[transform,opacity] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]"
+        class="absolute left-0 top-1/2 h-[1.5px] -translate-y-1/2 bg-muted-foreground"
         :style="{
-          width: '100%',
+          width: checked ? '100%' : '0px',
           opacity: checked ? 1 : 0,
-          transform: `translateY(-50%) scaleX(${checked ? 1 : 0})`,
-          transformOrigin: 'left center',
+          transition: 'width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
         }"
       />
     </span>
-  </button>
+  </div>
 </template>

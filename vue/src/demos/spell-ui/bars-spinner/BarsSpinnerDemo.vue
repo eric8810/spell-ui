@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import BarsSpinnerIcon from '@/demos/shared/BarsSpinnerIcon.vue'
+import { BarsSpinner } from '@/components/ui'
 
 interface Props {
   variant?: 'default' | 'sizes'
@@ -11,12 +11,12 @@ const props = withDefaults(defineProps<Props>(), {
 </script>
 
 <template>
-  <div v-if="props.variant === 'sizes'" class="flex items-center gap-4 text-foreground">
-    <BarsSpinnerIcon :size="16" />
-    <BarsSpinnerIcon :size="20" />
-    <BarsSpinnerIcon :size="24" />
-    <BarsSpinnerIcon :size="32" />
+  <div v-if="props.variant === 'sizes'" class="flex items-center gap-4">
+    <BarsSpinner :size="16" />
+    <BarsSpinner :size="20" />
+    <BarsSpinner :size="24" />
+    <BarsSpinner :size="32" />
   </div>
 
-  <BarsSpinnerIcon v-else :size="24" class="text-foreground" />
+  <BarsSpinner v-else />
 </template>

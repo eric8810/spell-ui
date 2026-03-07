@@ -1,7 +1,18 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, useSlots } from 'vue'
+import {
+  Comment,
+  Fragment,
+  Text,
+  computed,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  useSlots,
+  isVNode,
+  type VNodeChild,
+} from 'vue'
 import { cn } from '@/lib/utils'
-import { extractTextFromVNodes, flattenVNodes } from './slot-utils'
 
 type SplitMode = 'words' | 'characters' | 'lines'
 type StaggerFrom = 'first' | 'last' | 'center'
@@ -29,7 +40,7 @@ interface Props {
 interface GroupItem {
   key: string
   text: string
-  index: number
+  customIndex: number
 }
 
 interface Group {
@@ -65,9 +76,53 @@ const isAnimating = ref(false)
 const hasCompleted = ref(false)
 let observer: IntersectionObserver | null = null
 
+const extractRawText = (value: VNodeChild): string => {
+  if (Array.isArray(value)) {
+    return value.map((child) => extractRawText(child)).join('')
+  }
+
+  if (typeof value === 'string' || typeof value === 'number') {
+    return String(value)
+  }
+
+  if (!isVNode(value)) {
+    return ''
+  }
+
+  if (value.type === Comment) {
+    return ''
+  }
+
+  if (value.type === Text) {
+    return String(value.children ?? '')
+  }
+
+  if (value.type === Fragment && Array.isArray(value.children)) {
+    return extractRawText(value.children as VNodeChild[])
+  }
+
+  if (Array.isArray(value.children)) {
+    return extractRawText(value.children as VNodeChild[])
+  }
+
+  if (typeof value.children === 'string' || typeof value.children === 'number') {
+    return String(value.children)
+  }
+
+  return ''
+}
+
+const normalizeText = (value: string) =>
+  value
+    .replace(/\r\n/g, '\n')
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n[ \t]+/g, '\n')
+    .replace(/\n{2,}/g, '\n')
+    .trim()
+
 const textContent = computed(() => {
-  const slotNodes = slots.default ? flattenVNodes(slots.default() as any) : []
-  return extractTextFromVNodes(slotNodes)
+  const slotNodes = slots.default ? slots.default() : []
+  return normalizeText(extractRawText(slotNodes as VNodeChild[]))
 })
 
 const splitIntoCharacters = (text: string) => {
@@ -94,18 +149,24 @@ const groups = computed<Group[]>(() => {
   let runningIndex = 0
 
   if (props.split === 'characters') {
-    return text.split(' ').map((word, wordIndex, words) => {
-      const items = splitIntoCharacters(word).map((character, charIndex) => ({
+    const words = text.split(' ')
+
+    return words.map((word, wordIndex) => {
+      const characters = splitIntoCharacters(word)
+      const previousCharsCount = runningIndex
+      const items = characters.map((character, charIndex) => ({
         key: `character-${wordIndex}-${charIndex}`,
         text: character,
-        index: runningIndex++,
+        customIndex: previousCharsCount + charIndex,
       }))
+
+      runningIndex += characters.length
 
       if (wordIndex !== words.length - 1) {
         items.push({
           key: `space-${wordIndex}`,
           text: ' ',
-          index: runningIndex++,
+          customIndex: previousCharsCount + characters.length,
         })
       }
 
@@ -123,7 +184,7 @@ const groups = computed<Group[]>(() => {
         {
           key: `line-item-${index}`,
           text: line,
-          index: runningIndex++,
+          customIndex: runningIndex++,
         },
       ],
     }))
@@ -134,15 +195,17 @@ const groups = computed<Group[]>(() => {
       {
         key: `word-${wordIndex}`,
         text: word,
-        index: runningIndex++,
+        customIndex: runningIndex,
       },
     ]
+
+    runningIndex += 1
 
     if (wordIndex !== words.length - 1) {
       items.push({
         key: `space-${wordIndex}`,
         text: ' ',
-        index: runningIndex++,
+        customIndex: runningIndex,
       })
     }
 
@@ -153,7 +216,24 @@ const groups = computed<Group[]>(() => {
   })
 })
 
-const totalItems = computed(() => groups.value.reduce((count, group) => count + group.items.length, 0))
+const totalItems = computed(() => {
+  if (props.split === 'characters') {
+    return groups.value.reduce((count, group) => count + group.items.length, 0)
+  }
+
+  return groups.value.length
+})
+
+const lastItemKey = computed(() => {
+  const lastGroup = groups.value[groups.value.length - 1]
+
+  if (!lastGroup) {
+    return ''
+  }
+
+  const lastItem = lastGroup.items[lastGroup.items.length - 1]
+  return lastItem?.key ?? ''
+})
 
 const resolveEasing = (ease: TransitionOptions['ease']) => {
   if (Array.isArray(ease) && ease.length === 4) {
@@ -205,8 +285,8 @@ const reset = () => {
   hasCompleted.value = false
 }
 
-const handleTransitionEnd = (index: number) => {
-  if (!isAnimating.value || hasCompleted.value || index !== totalItems.value - 1) {
+const handleTransitionEnd = () => {
+  if (!isAnimating.value || hasCompleted.value) {
     return
   }
 
@@ -234,8 +314,6 @@ const observeVisibility = () => {
           observer?.disconnect()
           observer = null
         }
-      } else if (!props.once) {
-        reset()
       }
     },
     { threshold: 0.2 },
@@ -291,8 +369,8 @@ defineExpose({
       >
         <span
           class="inline-block"
-          :style="getItemStyle(item.index)"
-          @transitionend="handleTransitionEnd(item.index)"
+          :style="getItemStyle(item.customIndex)"
+          @transitionend="item.key === lastItemKey ? handleTransitionEnd() : undefined"
         >
           {{ item.text }}
         </span>
