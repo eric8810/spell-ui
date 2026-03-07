@@ -4,7 +4,7 @@ import type { RouteMatch } from './routes'
 const NAVIGATION_EVENT = 'spell-ui:navigate'
 
 const normalizePath = (value: string) => {
-  const path = value.replace(/[?#].*$/, '') || '/'
+  const path = value.replace(/^#/, '').replace(/[?#].*$/, '') || '/'
   if (path.length > 1 && path.endsWith('/')) {
     return path.slice(0, -1)
   }
@@ -32,16 +32,22 @@ const matchRoute = (path: string): RouteMatch => {
   return { name: 'not-found' }
 }
 
-const currentPath = ref(
-  typeof window === 'undefined' ? '/' : normalizePath(window.location.pathname),
-)
+const getHashPath = () => {
+  if (typeof window === 'undefined') {
+    return '/'
+  }
+  const hash = window.location.hash || '#/'
+  return normalizePath(hash)
+}
+
+const currentPath = ref(getHashPath())
 
 export const routeState: ComputedRef<RouteMatch> = computed(() =>
   matchRoute(currentPath.value),
 )
 
 const syncFromLocation = () => {
-  currentPath.value = normalizePath(window.location.pathname)
+  currentPath.value = getHashPath()
 }
 
 export const installRouter = () => {
@@ -49,8 +55,13 @@ export const installRouter = () => {
     return
   }
 
+  // 初始化时如果没有 hash，设置默认值
+  if (!window.location.hash) {
+    window.location.hash = '#/'
+  }
+
   syncFromLocation()
-  window.addEventListener('popstate', syncFromLocation)
+  window.addEventListener('hashchange', syncFromLocation)
   window.addEventListener(NAVIGATION_EVENT, syncFromLocation)
 }
 
@@ -59,16 +70,16 @@ export const navigate = (to: string, options: { replace?: boolean } = {}) => {
     return
   }
 
-  const url = new URL(to, window.location.origin)
-  const path = normalizePath(`${url.pathname}${url.search}${url.hash}`)
+  const path = normalizePath(to)
+  const hashPath = '#' + (path.startsWith('/') ? path : '/' + path)
 
   if (options.replace) {
-    window.history.replaceState({}, '', path)
-  } else if (path !== `${window.location.pathname}${window.location.search}${window.location.hash}`) {
-    window.history.pushState({}, '', path)
+    window.location.replace(hashPath)
+  } else {
+    window.location.hash = hashPath
   }
 
-  currentPath.value = normalizePath(url.pathname)
+  currentPath.value = normalizePath(path)
   window.dispatchEvent(new Event(NAVIGATION_EVENT))
 }
 
