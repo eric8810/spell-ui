@@ -2,16 +2,23 @@
 import { computed, ref, useSlots, watch } from 'vue'
 import { cn } from '@/lib/utils'
 
-interface Props {
-  title?: string
-  defaultChecked?: boolean
-  modelValue?: boolean
-  class?: string
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  title: 'Implement Checkbox',
-  defaultChecked: false,
+const props = defineProps({
+  title: {
+    type: String,
+    default: 'Implement Checkbox',
+  },
+  defaultChecked: {
+    type: Boolean,
+    default: false,
+  },
+  modelValue: {
+    type: Boolean,
+    default: undefined,
+  },
+  class: {
+    type: String,
+    default: undefined,
+  },
 })
 
 const emit = defineEmits<{
