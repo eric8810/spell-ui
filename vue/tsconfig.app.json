@@ -5,7 +5,10 @@
     "types": ["vite/client"],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@root/*": ["../*"],
+      "@react/*": ["./src/generated/react/*"],
+      "@react-shims/*": ["./src/react-shims/*"]
     },
 
     /* Linting */

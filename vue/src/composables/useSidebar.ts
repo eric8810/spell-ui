@@ -6,7 +6,7 @@ interface SidebarContextProps {
   setOpen: (value: boolean) => void
   openMobile: Ref<boolean>
   setOpenMobile: (value: boolean) => void
-  isMobile: ComputedRef<boolean>
+  isMobile: Ref<boolean>
   toggleSidebar: () => void
 }
 

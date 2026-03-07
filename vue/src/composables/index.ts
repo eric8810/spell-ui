@@ -1,2 +1,2 @@
 export { useSidebar, SIDEBAR_INJECTION_KEY, type SidebarContextProps } from './useSidebar'
-export { useMobile } from './use-mobile'
+export { useIsMobile } from './use-mobile'

@@ -1,66 +1,31 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import {
-  Button,
-  Input,
-  Label,
-  Separator,
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogFooter,
-  DialogTitle,
-  DialogDescription,
-} from '@/components/ui'
+import { computed, watchEffect } from 'vue'
+import HomeView from '@/views/HomeView.vue'
+import DocView from '@/views/DocView.vue'
+import NotFoundView from '@/views/NotFoundView.vue'
+import { navigate, routeState } from '@/router'
+import { getDocById } from '@/lib/doc'
 
-const inputValue = ref('')
-const dialogOpen = ref(false)
+const currentView = computed(() => {
+  switch (routeState.value.name) {
+    case 'home':
+      return HomeView
+    case 'doc':
+      return getDocById(routeState.value.id) ? DocView : NotFoundView
+    case 'docs-redirect':
+      return null
+    default:
+      return NotFoundView
+  }
+})
+
+watchEffect(() => {
+  if (routeState.value.name === 'docs-redirect') {
+    navigate('/docs/introduction', { replace: true })
+  }
+})
 </script>
 
 <template>
-  <div class="p-8 space-y-6 max-w-lg mx-auto">
-    <h1 class="text-2xl font-bold">Spell UI - Vue 3</h1>
-
-    <Separator />
-
-    <div class="space-y-2">
-      <Label for="demo-input">Label</Label>
-      <Input id="demo-input" v-model="inputValue" placeholder="Type something..." />
-    </div>
-
-    <div class="flex gap-2 flex-wrap">
-      <Button>Default</Button>
-      <Button variant="destructive">Destructive</Button>
-      <Button variant="outline">Outline</Button>
-      <Button variant="secondary">Secondary</Button>
-      <Button variant="ghost">Ghost</Button>
-      <Button variant="link">Link</Button>
-    </div>
-
-    <div class="flex gap-2">
-      <Button size="sm">Small</Button>
-      <Button size="default">Default</Button>
-      <Button size="lg">Large</Button>
-    </div>
-
-    <Separator />
-
-    <Dialog v-model:open="dialogOpen">
-      <DialogTrigger as-child>
-        <Button>Open Dialog</Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Dialog Title</DialogTitle>
-          <DialogDescription>This is a dialog description.</DialogDescription>
-        </DialogHeader>
-        <div class="py-4">Dialog content goes here.</div>
-        <DialogFooter>
-          <Button variant="outline" @click="dialogOpen = false">Cancel</Button>
-          <Button @click="dialogOpen = false">Confirm</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  </div>
+  <component :is="currentView" v-if="currentView" />
 </template>
