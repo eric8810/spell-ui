@@ -1,0 +1,119 @@
+<script setup lang="ts">
+import { computed, ref, useSlots, watch } from 'vue'
+import { cn } from '@/lib/utils'
+
+interface Props {
+  title?: string
+  defaultChecked?: boolean
+  modelValue?: boolean
+  class?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  title: 'Implement Checkbox',
+  defaultChecked: false,
+})
+
+const emit = defineEmits<{
+  checkedChange: [checked: boolean]
+  'update:modelValue': [checked: boolean]
+}>()
+
+const slots = useSlots()
+const checked = ref(props.modelValue ?? props.defaultChecked)
+
+watch(
+  () => props.modelValue,
+  (value) => {
+    if (value !== undefined) {
+      checked.value = value
+    }
+  },
+)
+
+watch(
+  () => props.defaultChecked,
+  (value) => {
+    if (props.modelValue === undefined) {
+      checked.value = value
+    }
+  },
+)
+
+const label = computed(() => props.title)
+
+const toggle = () => {
+  const nextChecked = !checked.value
+
+  if (props.modelValue === undefined) {
+    checked.value = nextChecked
+  }
+
+  emit('update:modelValue', nextChecked)
+  emit('checkedChange', nextChecked)
+}
+
+const showSlot = computed(() => Boolean(slots.default))
+</script>
+
+<template>
+  <button
+    type="button"
+    role="checkbox"
+    :aria-checked="checked"
+    :class="cn('flex cursor-pointer items-center gap-3 select-none text-left', props.class)"
+    @click="toggle"
+  >
+    <span
+      :class="
+        cn(
+          'flex size-4.5 items-center justify-center rounded-[6px] border-[1.5px] transition-colors duration-200',
+          checked
+            ? 'border-transparent bg-foreground'
+            : 'border-muted-foreground/40 bg-transparent hover:border-muted-foreground/60',
+        )
+      "
+    >
+      <svg viewBox="0 0 20 20" class="size-full text-background">
+        <path
+          d="M 0 4.5 L 3.182 8 L 10 0"
+          fill="transparent"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          transform="translate(5 6)"
+          :style="{
+            strokeDasharray: 14,
+            strokeDashoffset: checked ? 0 : 14,
+            opacity: checked ? 1 : 0,
+            transition: 'stroke-dashoffset 0.3s ease-out, opacity 0s linear',
+          }"
+        />
+      </svg>
+    </span>
+
+    <span class="relative">
+      <span
+        :class="
+          cn(
+            'text-base font-medium transition-colors duration-200',
+            checked ? 'text-muted-foreground' : 'text-foreground',
+          )
+        "
+      >
+        <slot v-if="showSlot" />
+        <template v-else>{{ label }}</template>
+      </span>
+      <span
+        class="absolute left-0 top-1/2 h-[1.5px] -translate-y-1/2 bg-muted-foreground transition-[transform,opacity] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]"
+        :style="{
+          width: '100%',
+          opacity: checked ? 1 : 0,
+          transform: `translateY(-50%) scaleX(${checked ? 1 : 0})`,
+          transformOrigin: 'left center',
+        }"
+      />
+    </span>
+  </button>
+</template>

@@ -11,13 +11,13 @@ import {
   Button,
 } from '@/components/ui'
 import DocsLayout from '@/layouts/DocsLayout.vue'
+import DocContentRenderer from '@/components/docs/DocContentRenderer.vue'
 import DocCopySection from '@/components/docs/DocCopySection.vue'
 import DocsTableOfContents from '@/components/docs/DocsTableOfContents.vue'
-import ReactIsland from '@/components/docs/ReactIsland.vue'
 import { allDocItems, getDocById, getDocSchema } from '@/lib/doc'
 import { getTableOfContents } from '@/lib/toc'
 import { navigate, routeSection, useRoute } from '@/router'
-import type { TocItem } from '@/lib/types'
+import type { DocBlock, TocItem } from '@/lib/types'
 import { ref } from 'vue'
 
 const route = useRoute()
@@ -34,7 +34,7 @@ const nextDoc = computed(() =>
 const gettingStartedIds = new Set(docSchema[0]?.items.map((item) => item.id) ?? [])
 const isGettingStarted = computed(() => (docId.value ? gettingStartedIds.has(docId.value) : false))
 
-const docComponent = ref<any>(null)
+const docBlocks = ref<DocBlock[]>([])
 const rawContent = ref('')
 const toc = ref<TocItem[]>([])
 
@@ -72,7 +72,7 @@ const scrollToCurrentSection = async () => {
 watch(
   () => docId.value,
   async (id) => {
-    docComponent.value = null
+    docBlocks.value = []
     rawContent.value = ''
     toc.value = []
 
@@ -80,16 +80,16 @@ watch(
       return
     }
 
-    const { docModuleLoaders, docSourceLoaders } = await import('@/generated/manifest.js')
-    const moduleLoader = docModuleLoaders[id]
+    const { docContentLoaders, docSourceLoaders } = await import('@/generated/manifest.js')
+    const contentLoader = docContentLoaders[id]
     const sourceLoader = docSourceLoaders[id]
 
-    if (!moduleLoader || !sourceLoader) {
+    if (!contentLoader || !sourceLoader) {
       return
     }
 
-    const [module, sourceModule] = await Promise.all([moduleLoader(), sourceLoader()])
-    docComponent.value = module
+    const [contentModule, sourceModule] = await Promise.all([contentLoader(), sourceLoader()])
+    docBlocks.value = contentModule.default ?? []
     rawContent.value = sourceModule.default ?? ''
     toc.value = await getTableOfContents(rawContent.value)
 
@@ -188,7 +188,7 @@ watch(
             </div>
           </header>
 
-          <ReactIsland v-if="docComponent" :component="docComponent" mode="mdx" />
+          <DocContentRenderer v-if="docId" :blocks="docBlocks" :doc-id="docId" />
 
           <nav class="not-prose mt-12 flex items-center justify-between border-t pt-12">
             <button
