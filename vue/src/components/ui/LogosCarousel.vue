@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, useSlots, type VNode } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, useSlots, watch, type VNode } from 'vue'
 import { cn } from '@/lib/utils'
 import { cloneVNodeWithKey, flattenVNodes } from './slot-utils'
 import VNodeRenderer from './VNodeRenderer'
@@ -29,6 +29,9 @@ const animate = ref(false)
 
 let startTimer: number | null = null
 let intervalTimer: number | null = null
+let isMounted = false
+
+type VNodeChildGroup = VNode[]
 
 const children = computed(() => flattenVNodes((slots.default?.() ?? []) as VNode[]))
 
@@ -47,7 +50,7 @@ const groups = computed(() => {
   return result
 })
 
-type VNodeChildGroup = VNode[]
+const groupsLength = computed(() => groups.value.length)
 
 const clearTimers = () => {
   if (startTimer !== null) {
@@ -59,6 +62,42 @@ const clearTimers = () => {
     window.clearInterval(intervalTimer)
     intervalTimer = null
   }
+}
+
+const scheduleAnimationStart = () => {
+  if (!isMounted) {
+    return
+  }
+
+  if (startTimer !== null) {
+    window.clearTimeout(startTimer)
+    startTimer = null
+  }
+
+  startTimer = window.setTimeout(() => {
+    animate.value = true
+  }, props.initialDelay)
+}
+
+const syncLoop = () => {
+  if (!isMounted) {
+    return
+  }
+
+  if (intervalTimer !== null) {
+    window.clearInterval(intervalTimer)
+    intervalTimer = null
+  }
+
+  if (!animate.value || groupsLength.value === 0) {
+    return
+  }
+
+  intervalTimer = window.setInterval(() => {
+    const newIndex = (index.value + 1) % groupsLength.value
+    index.value = newIndex
+    nextIndex.value = (newIndex + 1) % groupsLength.value
+  }, props.interval)
 }
 
 const getLogoStyle = (shouldAnimate: boolean, logoIndex: number, state: 'enter' | 'exit') => {
@@ -83,22 +122,25 @@ const getLogoStyle = (shouldAnimate: boolean, logoIndex: number, state: 'enter' 
 }
 
 onMounted(() => {
-  startTimer = window.setTimeout(() => {
-    animate.value = true
-
-    if (groups.value.length === 0) {
-      return
-    }
-
-    intervalTimer = window.setInterval(() => {
-      index.value = (index.value + 1) % groups.value.length
-      nextIndex.value = (index.value + 1) % groups.value.length
-    }, props.interval)
-  }, props.initialDelay)
+  isMounted = true
+  scheduleAnimationStart()
+  syncLoop()
 })
 
 onBeforeUnmount(() => {
+  isMounted = false
   clearTimers()
+})
+
+watch(
+  () => props.initialDelay,
+  () => {
+    scheduleAnimationStart()
+  },
+)
+
+watch([animate, () => props.interval, groupsLength], () => {
+  syncLoop()
 })
 </script>
 

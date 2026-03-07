@@ -7,6 +7,7 @@ interface Props {
   defaultChecked?: boolean
   modelValue?: boolean
   class?: string
+  onCheckedChange?: (checked: boolean) => void
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -31,17 +32,6 @@ watch(
   },
 )
 
-watch(
-  () => props.defaultChecked,
-  (value) => {
-    if (props.modelValue === undefined) {
-      checked.value = value
-    }
-  },
-)
-
-const label = computed(() => props.title)
-
 const toggle = () => {
   const nextChecked = !checked.value
 
@@ -49,6 +39,7 @@ const toggle = () => {
     checked.value = nextChecked
   }
 
+  props.onCheckedChange?.(nextChecked)
   emit('update:modelValue', nextChecked)
   emit('checkedChange', nextChecked)
 }
@@ -61,7 +52,7 @@ const showSlot = computed(() => Boolean(slots.default))
     :class="cn('flex cursor-pointer items-center gap-3 select-none', props.class)"
     @click="toggle"
   >
-    <span
+    <div
       :class="
         cn(
           'flex size-4.5 items-center justify-center rounded-[6px] border-[1.5px] transition-colors duration-200',
@@ -84,13 +75,15 @@ const showSlot = computed(() => Boolean(slots.default))
             strokeDasharray: 14,
             strokeDashoffset: checked ? 0 : 14,
             opacity: checked ? 1 : 0,
-            transition: 'stroke-dashoffset 0.3s ease-out, opacity 0s linear',
+            transitionProperty: 'stroke-dashoffset, opacity',
+            transitionDuration: '0.3s, 0s',
+            transitionTimingFunction: 'ease-out, linear',
           }"
         />
       </svg>
-    </span>
+    </div>
 
-    <span class="relative">
+    <div class="relative">
       <span
         :class="
           cn(
@@ -100,7 +93,7 @@ const showSlot = computed(() => Boolean(slots.default))
         "
       >
         <slot v-if="showSlot" />
-        <template v-else>{{ label }}</template>
+        <template v-else>{{ props.title }}</template>
       </span>
       <span
         class="absolute left-0 top-1/2 h-[1.5px] -translate-y-1/2 bg-muted-foreground"
@@ -110,6 +103,6 @@ const showSlot = computed(() => Boolean(slots.default))
           transition: 'width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
         }"
       />
-    </span>
+    </div>
   </div>
 </template>
