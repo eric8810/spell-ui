@@ -1,17 +1,19 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 
-const MOBILE_BREAKPOINT = 840
+// Keep JS mobile detection aligned with Tailwind's `md` breakpoint (48rem).
+const MOBILE_MEDIA_QUERY = '(max-width: 47.999rem)'
 
 export function useIsMobile() {
   const isMobile = ref<boolean>(false)
 
-  const checkMobile = () => {
-    isMobile.value = window.innerWidth < MOBILE_BREAKPOINT
-  }
-
   onMounted(() => {
+    const mql = window.matchMedia(MOBILE_MEDIA_QUERY)
+
+    const checkMobile = () => {
+      isMobile.value = mql.matches
+    }
+
     checkMobile()
-    const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
     mql.addEventListener('change', checkMobile)
 
     onUnmounted(() => {
