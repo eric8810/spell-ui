@@ -1,23 +1,23 @@
-# 组件迁移工作总结
+# Component Migration Summary
 
-## 本次完成的工作
+## Completed Work
 
-### 已成功迁移 4 个组件系统，共 30 个文件：
+### Successfully migrated 4 component systems, totaling 30 files:
 
-#### 1. NativeSelect 组件 (3个文件) ✅
+#### 1. NativeSelect Component (3 files) ✅
 ```
 ✓ NativeSelect.vue
 ✓ NativeSelectOptGroup.vue
 ✓ NativeSelectOption.vue
 ```
 
-#### 2. ScrollArea 组件 (2个文件) ✅
+#### 2. ScrollArea Component (2 files) ✅
 ```
 ✓ ScrollArea.vue
 ✓ ScrollBar.vue
 ```
 
-#### 3. Sheet 组件 (10个文件) ✅
+#### 3. Sheet Component (10 files) ✅
 ```
 ✓ Sheet.vue
 ✓ SheetClose.vue
@@ -31,7 +31,7 @@
 ✓ SheetHeader.vue
 ```
 
-#### 4. DropdownMenu 组件 (15个文件) ✅
+#### 4. DropdownMenu Component (15 files) ✅
 ```
 ✓ DropdownMenu.vue
 ✓ DropdownMenuTrigger.vue
@@ -50,35 +50,35 @@
 ✓ DropdownMenuSubContent.vue
 ```
 
-### 额外创建的文件：
+### Additional Files Created:
 
 #### Composables
 ```
 ✓ vue/src/composables/use-mobile.ts
 ```
 
-#### Sidebar (部分)
+#### Sidebar (Partial)
 ```
 ✓ SidebarProvider.vue (1/19)
 ```
 
-#### 文档
+#### Documentation
 ```
 ✓ vue/MIGRATION_STATUS.md
 ✓ vue/MIGRATION_TODO.md
 ```
 
-### 已更新的文件：
+### Updated Files:
 ```
-✓ vue/src/components/ui/index.ts (添加了30个导出)
+✓ vue/src/components/ui/index.ts (added 30 exports)
 ```
 
-## 未完成的组件 (3个)
+## Incomplete Components (3)
 
 ### 1. Autocomplete ❌
-**原因**: 依赖 @base-ui/react/autocomplete，Vue 生态中没有直接对应的库
+**Reason**: Depends on @base-ui/react/autocomplete, no direct equivalent in Vue ecosystem
 
-**需要的子组件** (15个):
+**Required sub-components** (15):
 - Autocomplete
 - AutocompleteInput
 - AutocompleteTrigger
@@ -95,15 +95,15 @@
 - AutocompleteStatus
 - AutocompleteCollection
 
-**建议解决方案**:
-1. 使用 @headlessui/vue 的 Combobox 组件
-2. 或使用 @vueuse/core 配合自定义实现
-3. 或寻找第三方 Vue autocomplete 库
+**Suggested solutions**:
+1. Use Combobox component from @headlessui/vue
+2. Or use @vueuse/core with custom implementation
+3. Or find a third-party Vue autocomplete library
 
 ### 2. Command ❌
-**原因**: 依赖 Autocomplete 和 @base-ui/react/dialog
+**Reason**: Depends on Autocomplete and @base-ui/react/dialog
 
-**需要的子组件** (14个):
+**Required sub-components** (14):
 - CommandDialog
 - CommandDialogPortal
 - CommandDialogTrigger
@@ -123,15 +123,15 @@
 - CommandShortcut
 - CommandFooter
 
-**依赖关系**: 必须先完成 Autocomplete
+**Dependencies**: Must complete Autocomplete first
 
 ### 3. Sidebar ❌
-**原因**: 组件极其复杂，包含19个子组件和复杂的状态管理
+**Reason**: Component is extremely complex, containing 19 sub-components and complex state management
 
-**已完成** (1/19):
+**Completed** (1/19):
 - SidebarProvider.vue ✓
 
-**待完成** (18个):
+**Pending** (18):
 - Sidebar
 - SidebarTrigger
 - SidebarRail
@@ -155,22 +155,22 @@
 - SidebarMenuSubItem
 - SidebarMenuSubButton
 
-## 迁移统计
+## Migration Statistics
 
-| 组件 | 状态 | 文件数 | 完成度 |
-|------|------|--------|--------|
-| NativeSelect | ✅ 完成 | 3 | 100% |
-| ScrollArea | ✅ 完成 | 2 | 100% |
-| Sheet | ✅ 完成 | 10 | 100% |
-| DropdownMenu | ✅ 完成 | 15 | 100% |
-| Autocomplete | ❌ 未开始 | 0/15 | 0% |
-| Command | ❌ 未开始 | 0/14 | 0% |
-| Sidebar | 🔄 进行中 | 1/19 | 5% |
-| **总计** | | **31/78** | **40%** |
+| Component | Status | File Count | Completion |
+|-----------|--------|------------|------------|
+| NativeSelect | ✅ Complete | 3 | 100% |
+| ScrollArea | ✅ Complete | 2 | 100% |
+| Sheet | ✅ Complete | 10 | 100% |
+| DropdownMenu | ✅ Complete | 15 | 100% |
+| Autocomplete | ❌ Not Started | 0/15 | 0% |
+| Command | ❌ Not Started | 0/14 | 0% |
+| Sidebar | 🔄 In Progress | 1/19 | 5% |
+| **Total** | | **31/78** | **40%** |
 
-## 技术要点
+## Technical Highlights
 
-### 成功应用的转换规则：
+### Successfully Applied Conversion Rules:
 1. ✅ `className` → `class`
 2. ✅ `onClick` → `@click`
 3. ✅ `{...props}` → `v-bind="$attrs"`
@@ -178,47 +178,47 @@
 5. ✅ `children` → `<slot />`
 6. ✅ `@radix-ui/react` → `radix-vue`
 7. ✅ `lucide-react` → `lucide-vue-next`
-8. ✅ 保持 `class-variance-authority` 样式变体
-9. ✅ 保持所有 `data-slot` 属性
-10. ✅ 保持样式类名完全一致
+8. ✅ Preserve `class-variance-authority` style variants
+9. ✅ Preserve all `data-slot` attributes
+10. ✅ Keep style class names identical
 
-### 使用的技术栈：
+### Tech Stack Used:
 - Vue 3 Composition API
 - TypeScript
-- script setup 语法
+- script setup syntax
 - radix-vue
 - lucide-vue-next
 - class-variance-authority
 - tailwind-merge
 
-## 下一步行动建议
+## Next Steps
 
-### 立即可做：
-1. **完成 Sidebar 剩余18个组件** - 这是最常用的组件，优先级最高
-2. **测试已完成的4个组件** - 确保功能正常
+### Immediate Actions:
+1. **Complete remaining 18 Sidebar components** - Most commonly used component, highest priority
+2. **Test completed 4 components** - Ensure functionality works
 
-### 需要研究：
-1. **Autocomplete 替代方案** - 研究 @headlessui/vue 或其他库
-2. **Command 实现方案** - 基于 Autocomplete 的解决方案
+### Research Needed:
+1. **Autocomplete alternative** - Research @headlessui/vue or other libraries
+2. **Command implementation** - Solution based on Autocomplete
 
-### 可选优化：
-1. 为所有组件添加单元测试
-2. 创建 Storybook 文档
-3. 添加使用示例
+### Optional Optimizations:
+1. Add unit tests for all components
+2. Create Storybook documentation
+3. Add usage examples
 
-## 文件位置
+## File Locations
 
-所有新创建的组件位于：
+All newly created components are located at:
 ```
 /Users/eric8810/.openclaw/workspace/spell-ui-vue3/vue/src/components/ui/
 ```
 
-Composables 位于：
+Composables are located at:
 ```
 /Users/eric8810/.openclaw/workspace/spell-ui-vue3/vue/src/composables/
 ```
 
-文档位于：
+Documentation is located at:
 ```
 /Users/eric8810/.openclaw/workspace/spell-ui-vue3/vue/
 ```

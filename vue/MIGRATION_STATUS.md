@@ -1,16 +1,16 @@
-# Vue 3 组件迁移状态
+# Vue 3 Component Migration Status
 
-## 当前结论
+## Current Conclusion
 
-- 目标范围内的组件迁移已完成
-- 本轮完成: `Autocomplete`、`Command`
-- `vue/src/components/ui/index.ts` 已补齐对应导出
+- Migration of target components is complete
+- This round completed: `Autocomplete`, `Command`
+- `vue/src/components/ui/index.ts` exports updated accordingly
 
-## 本轮完成
+## This Round Completed
 
 ### 1. Autocomplete
 
-已补齐以下文件:
+Added the following files:
 
 - `Autocomplete.vue`
 - `AutocompleteInput.vue`
@@ -29,15 +29,15 @@
 - `AutocompleteCollection.vue`
 - `useAutocompleteFilter.ts`
 
-实现说明:
+Implementation notes:
 
-- 使用 `radix-vue` 的 `Combobox` 组件族替代 `@base-ui/react/autocomplete`
-- `AutocompleteInput` 改为直接绑定真实 `ComboboxInput`，避免 `as-child + Input.vue` 导致输入行为落不到原生 `<input>`
-- 保持现有迁移约定: `TypeScript`、`script setup`、`class`、`v-bind="$attrs"`、`lucide-vue-next`
+- Uses `Combobox` component family from `radix-vue` to replace `@base-ui/react/autocomplete`
+- `AutocompleteInput` now directly binds to real `ComboboxInput`, avoiding input behavior issues from `as-child + Input.vue`
+- Maintains existing migration conventions: `TypeScript`, `script setup`, `class`, `v-bind="$attrs"`, `lucide-vue-next`
 
 ### 2. Command
 
-已补齐以下文件:
+Added the following files:
 
 - `CommandDialog.vue`
 - `CommandDialogTrigger.vue`
@@ -58,15 +58,15 @@
 - `CommandShortcut.vue`
 - `CommandFooter.vue`
 
-实现说明:
+Implementation notes:
 
-- 使用 `radix-vue` 的 `Dialog` 组件族替代 `@base-ui/react/dialog`
-- `Command` 基于新的 `Autocomplete` 封装构建
-- 保留原 React 版的结构语义和主要样式层级
+- Uses `Dialog` component family from `radix-vue` to replace `@base-ui/react/dialog`
+- `Command` is built on the new `Autocomplete` wrapper
+- Preserves structural semantics and main style hierarchy from the original React version
 
-## 当前完成状态
+## Current Completion Status
 
-已完成组件族:
+Completed component families:
 
 - `NativeSelect`
 - `ScrollArea`
@@ -76,31 +76,31 @@
 - `Autocomplete`
 - `Command`
 
-当前迁移状态:
+Current migration status:
 
-- 计划内待迁移组件: `0`
-- 组件迁移任务: `完成`
+- Components pending migration in plan: `0`
+- Component migration task: `Complete`
 
-## 验证结果
+## Verification Results
 
-已验证:
+Verified:
 
-- `pnpm exec vite build` 通过
+- `pnpm exec vite build` passed
 
-未完全通过:
+Not fully passed:
 
-- `pnpm build` 仍被仓库内既有 TypeScript 问题阻塞，与本次迁移无直接关系
-- 现存错误:
+- `pnpm build` is still blocked by existing TypeScript issues in the repository, not directly related to this migration
+- Existing errors:
   - `src/components/ui/SidebarProvider.vue`
   - `src/composables/index.ts`
 
-## 迁移约定
+## Migration Conventions
 
-所有新增/更新文件均遵循以下规则:
+All new/updated files follow these rules:
 
 - `className` → `class`
-- `v-bind="$attrs"` 透传
+- `v-bind="$attrs"` pass-through
 - `script setup + TypeScript`
 - `lucide-react` → `lucide-vue-next`
-- 保留 `data-slot`
-- 优先使用 `radix-vue` 替代 React Primitive
+- Preserve `data-slot`
+- Prefer `radix-vue` over React Primitives
