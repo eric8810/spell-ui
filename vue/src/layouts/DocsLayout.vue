@@ -16,7 +16,7 @@ defineProps<{
   <div class="flex">
     <SidebarProvider class="flex flex-col">
       <SiteHeader :doc-schema="docSchema" />
-      <div class="mx-auto flex w-full pt-14 3xl:max-w-screen-2xl">
+      <div class="mx-auto flex w-full items-start pt-14 3xl:max-w-screen-2xl">
         <AppSidebar :doc-schema="docSchema" />
         <SidebarInset>
           <slot />

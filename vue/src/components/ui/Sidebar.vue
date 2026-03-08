@@ -35,7 +35,7 @@
 
   <div
     v-else
-    class="group peer text-sidebar-foreground hidden md:block"
+    class="group peer text-sidebar-foreground hidden md:block md:shrink-0"
     :data-state="sidebarContext.state.value"
     :data-collapsible="sidebarContext.state.value === 'collapsed' ? collapsible : undefined"
     :data-variant="variant"
@@ -45,7 +45,7 @@
     <div
       data-slot="sidebar-gap"
       :class="cn(
-        'relative w-(--sidebar-width) bg-transparent transition-[width] duration-200 ease-linear',
+        'relative w-(--sidebar-width) shrink-0 bg-transparent transition-[width] duration-200 ease-linear',
         'group-data-[collapsible=offcanvas]:w-0',
         'group-data-[side=right]:rotate-180',
         variant === 'floating' || variant === 'inset'
