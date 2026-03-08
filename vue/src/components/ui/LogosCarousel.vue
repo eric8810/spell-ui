@@ -151,7 +151,7 @@ const getLogoStyle = (groupIndex: number, logoIndex: number) => {
 
   return {
     ...style,
-    animationName: state === 'enter' ? 'spell-ui-logos-enter' : 'spell-ui-logos-exit',
+    animationName: state === 'enter' ? 'logos-enter' : 'logos-exit',
     animationTimingFunction: 'ease',
   }
 }
@@ -211,8 +211,8 @@ watch([animate, () => props.interval, groupsLength], () => {
   </div>
 </template>
 
-<style scoped>
-@keyframes spell-ui-logos-enter {
+<style>
+@keyframes logos-enter {
   0% {
     transform: translateY(40px);
     filter: blur(4px);
@@ -226,7 +226,7 @@ watch([animate, () => props.interval, groupsLength], () => {
   }
 }
 
-@keyframes spell-ui-logos-exit {
+@keyframes logos-exit {
   0% {
     transform: translateY(0);
     filter: blur(0px);
