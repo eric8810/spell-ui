@@ -12,6 +12,7 @@ const generatedRoot = path.join(vueRoot, 'src/generated')
 const generatedDocsRoot = path.join(generatedRoot, 'docs')
 
 const toPosix = (value) => value.split(path.sep).join('/')
+const toKebabCase = (value) => value.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase()
 
 const ensureDir = async (filePath) => {
   await fs.mkdir(path.dirname(filePath), { recursive: true })
@@ -33,9 +34,12 @@ const createDocDemoEntries = (docId, variants) => {
   const component = `@/demos/spell-ui/${docId}/${toPascalCase(docId)}Demo.vue`
 
   return Object.fromEntries(
-    Object.entries(variants).map(([file, config]) => {
+    Object.entries(variants).flatMap(([file, config]) => {
       const props = typeof config === 'string' ? { variant: config } : (config ?? {})
-      return [`docs/${docId}/${file}.tsx`, { component, props }]
+      return [
+        [`docs/${docId}/${file}.tsx`, { component, props }],
+        [`docs/${docId}/${file}.vue`, { component, props }],
+      ]
     }),
   )
 }
@@ -191,6 +195,79 @@ const parseCodeFenceInfo = (infoLine) => {
   return { lang, file }
 }
 
+const transformDocCode = (code) =>
+  code
+    .replace(/import\s+\{\s*([^}]+)\s*\}\s+from\s+["']@\/registry\/spell-ui\/[^"'\n]+["'];?/g, 'import { $1 } from "@/components/ui"')
+    .replace(/import\s+\{\s*([^}]+)\s*\}\s+from\s+["']@\/components\/[^"'\n]+["'];?/g, 'import { $1 } from "@/components/ui"')
+    .replace(/import\s+([A-Za-z0-9_]+)\s+from\s+["']@\/registry\/spell-ui\/[^"'\n]+["'];?/g, 'import { $1 } from "@/components/ui"')
+    .replace(/import\s+([A-Za-z0-9_]+)\s+from\s+["']@\/components\/[^"'\n]+["'];?/g, 'import { $1 } from "@/components/ui"')
+    .replace(/import\s+\{\s*Rays\s*\}\s+from\s+["']@\/components\/ui["'];?/g, 'import { LightRays } from "@/components/ui"')
+    .replaceAll('className=', 'class=')
+    .replaceAll('onClick=', '@click=')
+    .replaceAll('onColorSelect=', '@color-select=')
+    .replaceAll('onCheckedChange=', '@checked-change=')
+    .replaceAll('defaultValue=', 'default-value=')
+    .replaceAll('defaultChecked', 'default-checked')
+    .replaceAll('ringColor=', 'ring-color=')
+    .replaceAll('pauseOnHover', 'pause-on-hover')
+    .replaceAll('inView', 'in-view')
+    .replaceAll('raysColor=', 'rays-color=')
+    .replaceAll('backgroundColor=', 'background-color=')
+    .replaceAll('fontSize=', 'font-size=')
+    .replaceAll('speedReveal=', 'speed-reveal=')
+    .replaceAll('speedSegment=', 'speed-segment=')
+    .replaceAll('<Rays', '<LightRays')
+    .replaceAll('</Rays>', '</LightRays>')
+    .replace(/(\s)([A-Za-z][\w-]*)=\{\{([\s\S]*?)\}\}/g, (_, space, name, expr) => `${space}:${name}='${`{ ${expr.trim()} }`}'`)
+    .replace(/(@[a-z-]+)=\{([^{}]+)\}/g, (_, name, expr) => `${name}='${expr.trim()}'`)
+    .replace(/(\s)([A-Za-z][\w-]*)=\{([^{}]+)\}/g, (_, space, name, expr) => `${space}:${name}='${expr.trim()}'`)
+    .replaceAll('React.ReactNode', 'VNodeChild')
+    .replaceAll('ReactNode[]', 'VNodeChild[]')
+    .replaceAll('ReactNode', 'VNodeChild')
+    .replaceAll('React.CSSProperties', 'CSSProperties')
+
+const transformPropName = (name) => {
+  if (name === 'children') {
+    return 'default'
+  }
+
+  if (name === 'className') {
+    return 'class'
+  }
+
+  if (/^on[A-Z]/.test(name)) {
+    return `@${toKebabCase(name.slice(2))}`
+  }
+
+  if (/[A-Z]/.test(name)) {
+    return toKebabCase(name)
+  }
+
+  return name
+}
+
+const transformPropType = (value) =>
+  typeof value === 'string'
+    ? value
+        .replaceAll('React.ReactNode', 'VNodeChild')
+        .replaceAll('ReactNode[]', 'VNodeChild[]')
+        .replaceAll('ReactNode', 'VNodeChild')
+        .replaceAll('React.CSSProperties', 'CSSProperties')
+        .replaceAll('keyof JSX.IntrinsicElements', 'keyof HTMLElementTagNameMap | string')
+    : value
+
+const transformPropsTableData = (rows) =>
+  rows
+    .filter((row) => row.name !== 'asChild')
+    .map((row) => ({
+      ...row,
+      name: typeof row.name === 'string' ? transformPropName(row.name) : row.name,
+      type: transformPropType(row.type),
+      default: transformPropType(row.default),
+      typeDetails: transformPropType(row.typeDetails),
+      nameDetails: transformPropType(row.nameDetails),
+    }))
+
 const highlightCode = async (code, lang) => {
   try {
     return await codeToHtml(code, {
@@ -219,7 +296,7 @@ const readCodeBlock = async (docId, infoLine, bodyLines) => {
   if (file) {
     const absolutePath = path.resolve(docsRoot, docId, file)
     const sourcePath = toPosix(path.relative(repoRoot, absolutePath))
-    const code = await fs.readFile(absolutePath, 'utf8')
+    const code = transformDocCode(await fs.readFile(absolutePath, 'utf8'))
     return {
       code,
       html: await highlightCode(code, normalizeLang(lang, absolutePath)),
@@ -227,7 +304,7 @@ const readCodeBlock = async (docId, infoLine, bodyLines) => {
     }
   }
 
-  const code = bodyLines.join('\n')
+  const code = transformDocCode(bodyLines.join('\n'))
   return {
     code,
     html: await highlightCode(code, normalizeLang(lang)),
@@ -250,7 +327,7 @@ const parsePreviewClass = (blockSource) => {
     return ''
   }
 
-  const classMatch = previewMatch[1]?.match(/className="([^"]+)"/)
+  const classMatch = previewMatch[1]?.match(/(?:className|class)="([^"]+)"/)
   return classMatch?.[1] ?? ''
 }
 
@@ -309,7 +386,7 @@ const parseInstallationTabs = async (lines, startIndex, docId) => {
 
 const parsePropsTable = (lines, startIndex) => {
   const { lines: blockLines, nextIndex } = collectUntil(lines, startIndex, (line) => line.includes('/>'))
-  const data = parsePropsTableData(blockLines.join('\n'))
+  const data = transformPropsTableData(parsePropsTableData(blockLines.join('\n')))
 
   return {
     block: {
@@ -618,7 +695,11 @@ const verifyDemoMappings = async () => {
     const files = await fs.readdir(docDir)
 
     for (const file of files) {
-      if (!/^demo.*\.(ts|tsx)$/.test(file)) {
+      if (!/^demo.*\.(ts|tsx|vue)$/.test(file)) {
+        continue
+      }
+
+      if (file.endsWith('.tsx') && files.includes(file.replace(/\.tsx$/, '.vue'))) {
         continue
       }
 

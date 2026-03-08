@@ -6,7 +6,7 @@ import { Demo as DemoSpeed } from './demo-speed'
     <Demo />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo.tsx
+    ```vue file=./demo.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -14,7 +14,7 @@ import { Demo as DemoSpeed } from './demo-speed'
 ## Installation
 
 <InstallationTabs item="blur-reveal">
-```tsx file=../../registry/spell-ui/blur-reveal.tsx
+```vue file=../../vue/src/components/ui/BlurReveal.vue
 ```
 </InstallationTabs>
 
@@ -27,17 +27,17 @@ import { Demo as DemoSpeed } from './demo-speed'
     <DemoSpeed />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo-speed.tsx
+    ```vue file=./demo-speed.vue
     ```
   </DemoCode>
 </DemoCanvas>
 
 ## Usage
 
-```tsx
-import { BlurReveal } from "@/components/blur-reveal";
+```vue
+import { BlurReveal } from "@/components/ui";
 ```
-```tsx
+```vue
 <BlurReveal>Hello, World!</BlurReveal>
 ```
 
@@ -46,12 +46,12 @@ import { BlurReveal } from "@/components/blur-reveal";
 <PropsTable
   data={[
     {
-      name: "children",
+      name: "default",
       type: "string",
       nameDetails: "Text content to animate"
     },
     {
-      name: "className",
+      name: "class",
       type: "string",
       nameDetails: "Additional CSS classes"
     },
@@ -80,28 +80,28 @@ import { BlurReveal } from "@/components/blur-reveal";
       nameDetails: "Controls whether animation is shown"
     },
     {
-      name: "onAnimationComplete",
+      name: "@animation-complete",
       type: "() => void",
       nameDetails: "Callback when animation completes"
     },
     {
-      name: "onAnimationStart",
+      name: "@animation-start",
       type: "() => void",
       nameDetails: "Callback when animation starts"
     },
     {
       name: "as",
-      type: "keyof JSX.IntrinsicElements",
+      type: "keyof HTMLElementTagNameMap | string",
       default: "p",
       nameDetails: "HTML element to render as"
     },
     {
       name: "style",
-      type: "React.CSSProperties",
+      type: "CSSProperties",
       nameDetails: "Inline styles"
     },
     {
-      name: "inView",
+      name: "in-view",
       type: "boolean",
       default: "false",
       nameDetails: "Whether to trigger animation only when element is in viewport"

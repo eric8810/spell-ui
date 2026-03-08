@@ -7,7 +7,7 @@ import { Demo as DemoSizes } from './demo-sizes'
     <Demo />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo.tsx
+    ```vue file=./demo.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -15,7 +15,7 @@ import { Demo as DemoSizes } from './demo-sizes'
 ## Installation
 
 <InstallationTabs item="pop-button">
-```tsx file=../../registry/spell-ui/pop-button.tsx
+```vue file=../../vue/src/components/ui/PopButton.vue
 ```
 </InstallationTabs>
 
@@ -24,36 +24,13 @@ import { Demo as DemoSizes } from './demo-sizes'
 
 To use the playful DynaPuff font with this component:
 
-1. Add the font to your `layout.tsx`:
-
-```tsx
-import { DynaPuff } from 'next/font/google'
-
-const dynaPuff = DynaPuff({
-  subsets: ['latin'],
-  variable: '--font-dyna-puff',
-})
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return (
-    <html lang="en">
-      <body className={dynaPuff.variable}>
-        {children}
-      </body>
-    </html>
-  )
-}
-```
-
-2. Add the CSS variable to your `globals.css`:
+1. Add the font to your `src/style.css`:
 
 ```css
+@import url("https://fonts.googleapis.com/css2?family=DynaPuff:wght@400..700&display=swap");
+
 :root {
-  --font-pop: var(--font-dyna-puff);
+  --font-pop: "DynaPuff", cursive;
 }
 ```
 
@@ -68,7 +45,7 @@ export default function RootLayout({
     <DemoVariant />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo-variant.tsx
+    ```vue file=./demo-variant.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -80,7 +57,7 @@ export default function RootLayout({
     <DemoSizes />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo-sizes.tsx
+    ```vue file=./demo-sizes.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -88,11 +65,11 @@ export default function RootLayout({
 
 ## Usage
 
-```tsx
-import { PopButton } from "@/components/pop-button";
+```vue
+import { PopButton } from "@/components/ui";
 ```
 
-```tsx
+```vue
 <PopButton color="violet" size="default">
   Button
 </PopButton>
@@ -103,8 +80,8 @@ import { PopButton } from "@/components/pop-button";
 <PropsTable
   data={[
     {
-      name: "children",
-      type: "React.ReactNode",
+      name: "default",
+      type: "VNodeChild",
       required: true,
       nameDetails: "The content to display inside the button"
     },
@@ -127,12 +104,12 @@ import { PopButton } from "@/components/pop-button";
       nameDetails: "Whether the button is disabled"
     },
     {
-      name: "onClick",
+      name: "@click",
       type: "() => void",
       nameDetails: "Click event handler"
     },
     {
-      name: "className",
+      name: "class",
       type: "string",
       nameDetails: "Additional CSS classes to apply"
     },

@@ -2,11 +2,11 @@ import { Demo } from './demo'
 import { DemoMulti } from './demo-multi'
 
 <DemoCanvas>
-  <DemoPreview className="p-0">
+  <DemoPreview class="p-0">
     <Demo />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo.tsx
+    ```vue file=./demo.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -14,20 +14,20 @@ import { DemoMulti } from './demo-multi'
 ## Installation
 
 <InstallationTabs item="light-rays">
-```tsx file=../../registry/spell-ui/light-rays.tsx
+```vue file=../../vue/src/components/ui/LightRays.vue
 ```
 </InstallationTabs>
 
 ## Usage
 
-```tsx
-import Rays from "@/components/light-rays";
+```vue
+import { LightRays } from "@/components/ui";
 ```
 
-```tsx
-<div className="relative h-[300px] w-full">
-  <Rays />
-  <div className="relative z-10">Your content here</div>
+```vue
+<div class="relative h-[300px] w-full">
+  <LightRays />
+  <div class="relative z-10">Your content here</div>
 </div>
 ```
 
@@ -36,11 +36,11 @@ import Rays from "@/components/light-rays";
 ### Multi Color
 
 <DemoCanvas>
-  <DemoPreview className="p-0">
+  <DemoPreview class="p-0">
     <DemoMulti />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo-multi.tsx
+    ```vue file=./demo-multi.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -80,7 +80,7 @@ import Rays from "@/components/light-rays";
       nameDetails: "Border radius of the container"
     },
     {
-      name: "backgroundColor",
+      name: "background-color",
       type: "string",
       default: '"#000"',
       nameDetails: "Background color of the canvas"
@@ -92,13 +92,13 @@ import Rays from "@/components/light-rays";
       nameDetails: "Animation configuration"
     },
     {
-      name: "raysColor",
+      name: "rays-color",
       type: '{ mode: "single"; color: string } | { mode: "multi"; color1: string; color2: string } | { mode: "random" }',
       default: '{ mode: "single", color: "#639AFF" }',
       nameDetails: "Color configuration for rays (single, multi gradient, or random)"
     },
     {
-      name: "className",
+      name: "class",
       type: "string",
       nameDetails: "Additional CSS classes"
     },

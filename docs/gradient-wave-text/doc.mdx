@@ -5,7 +5,7 @@ import { Demo } from './demo'
     <Demo />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo.tsx
+    ```vue file=./demo.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -13,17 +13,17 @@ import { Demo } from './demo'
 ## Installation
 
 <InstallationTabs item="gradient-wave-text">
-```tsx file=../../registry/spell-ui/gradient-wave-text.tsx
+```vue file=../../vue/src/components/ui/GradientWaveText.vue
 ```
 </InstallationTabs>
 
 ## Usage
 
-```tsx
-import { GradientWaveText } from "@/components/gradient-wave-text";
+```vue
+import { GradientWaveText } from "@/components/ui";
 ```
-```tsx
-<GradientWaveText className="text-3xl md:text-5xl font-medium tracking-[-.03em]">
+```vue
+<GradientWaveText class="text-3xl md:text-5xl font-medium tracking-[-.03em]">
   Just ship things.
 </GradientWaveText>
 ```
@@ -33,12 +33,12 @@ import { GradientWaveText } from "@/components/gradient-wave-text";
 <PropsTable
   data={[
     {
-      name: "children",
-      type: "React.ReactNode",
+      name: "default",
+      type: "VNodeChild",
       nameDetails: "Text content to display with gradient wave effect"
     },
     {
-      name: "className",
+      name: "class",
       type: "string",
       nameDetails: "Additional CSS classes"
     },
@@ -73,7 +73,7 @@ import { GradientWaveText } from "@/components/gradient-wave-text";
       nameDetails: "Repeat animation infinitely"
     },
     {
-      name: "inView",
+      name: "in-view",
       type: "boolean",
       default: "false",
       nameDetails: "Start animation when element enters viewport"
@@ -82,7 +82,7 @@ import { GradientWaveText } from "@/components/gradient-wave-text";
       name: "once",
       type: "boolean",
       default: "true",
-      nameDetails: "Only animate once when inView is true"
+      nameDetails: "Only animate once when in-view is true"
     },
     {
       name: "radial",

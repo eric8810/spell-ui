@@ -6,7 +6,7 @@ import { Demo as DemoSpeed } from './demo-speed'
     <Demo />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo.tsx
+    ```vue file=./demo.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -14,7 +14,7 @@ import { Demo as DemoSpeed } from './demo-speed'
 ## Installation
 
 <InstallationTabs item="special-text">
-```tsx file=../../registry/spell-ui/special-text.tsx
+```vue file=../../vue/src/components/ui/SpecialText.vue
 ```
 </InstallationTabs>
 
@@ -27,17 +27,17 @@ import { Demo as DemoSpeed } from './demo-speed'
     <DemoSpeed />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo-speed.tsx
+    ```vue file=./demo-speed.vue
     ```
   </DemoCode>
 </DemoCanvas>
 
 ## Usage
 
-```tsx
-import { SpecialText } from "@/components/special-text";
+```vue
+import { SpecialText } from "@/components/ui";
 ```
-```tsx
+```vue
 <SpecialText>SPELL UI</SpecialText>
 ```
 
@@ -46,7 +46,7 @@ import { SpecialText } from "@/components/special-text";
 <PropsTable
   data={[
     {
-      name: "children",
+      name: "default",
       type: "string",
       nameDetails: "The text content to animate"
     },
@@ -63,13 +63,13 @@ import { SpecialText } from "@/components/special-text";
       nameDetails: "Delay before starting the animation (in seconds)"
     },
     {
-      name: "className",
+      name: "class",
       type: "string",
       default: "\"\"",
       nameDetails: "Additional CSS classes for styling"
     },
     {
-      name: "inView",
+      name: "in-view",
       type: "boolean",
       default: "false",
       nameDetails: "Whether to trigger animation only when element is in viewport"

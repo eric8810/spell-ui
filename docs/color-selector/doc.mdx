@@ -7,7 +7,7 @@ import { Demo as DemoCallback } from './demo-callback'
     <Demo />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo.tsx
+    ```vue file=./demo.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -15,7 +15,7 @@ import { Demo as DemoCallback } from './demo-callback'
 ## Installation
 
 <InstallationTabs item="color-selector">
-```tsx file=../../registry/spell-ui/color-selector.tsx
+```vue file=../../vue/src/components/ui/ColorSelector.vue
 ```
 </InstallationTabs>
 
@@ -28,7 +28,7 @@ import { Demo as DemoCallback } from './demo-callback'
     <DemoSizes />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo-sizes.tsx
+    ```vue file=./demo-sizes.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -40,21 +40,21 @@ import { Demo as DemoCallback } from './demo-callback'
     <DemoCallback />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo-callback.tsx
+    ```vue file=./demo-callback.vue
     ```
   </DemoCode>
 </DemoCanvas>
 
 ## Usage
 
-```tsx
-import { ColorSelector } from "@/components/color-selector";
+```vue
+import { ColorSelector } from "@/components/ui";
 ```
-```tsx
+```vue
 <ColorSelector
-  colors={["red", "blue", "green"]}
-  defaultValue="blue"
-  onColorSelect={(color) => console.log(color)}
+  :colors='["red", "blue", "green"]'
+  default-value="blue"
+  @color-select="(color) => console.log(color)"
 />
 ```
 
@@ -68,7 +68,7 @@ import { ColorSelector } from "@/components/color-selector";
       nameDetails: "Array of color values to display"
     },
     {
-      name: "defaultValue",
+      name: "default-value",
       type: "string",
       nameDetails: "Initially selected color"
     },
@@ -84,12 +84,12 @@ import { ColorSelector } from "@/components/color-selector";
       nameDetails: "Name attribute for hidden input (for form submission)"
     },
     {
-      name: "onColorSelect",
+      name: "@color-select",
       type: "(color: string) => void",
       nameDetails: "Callback when a color is selected"
     },
     {
-      name: "className",
+      name: "class",
       type: "string",
       nameDetails: "Additional CSS classes for the component"
     }

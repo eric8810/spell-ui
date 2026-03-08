@@ -6,7 +6,7 @@ import { Demo as DemoCustom } from './demo-custom'
     <Demo />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo.tsx
+    ```vue file=./demo.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -14,7 +14,7 @@ import { Demo as DemoCustom } from './demo-custom'
 ## Installation
 
 <InstallationTabs item="copy-button">
-```tsx file=../../registry/spell-ui/copy-button.tsx
+```vue file=../../vue/src/components/ui/CopyButton.vue
 ```
 </InstallationTabs>
 
@@ -27,17 +27,17 @@ import { Demo as DemoCustom } from './demo-custom'
     <DemoCustom />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo-custom.tsx
+    ```vue file=./demo-custom.vue
     ```
   </DemoCode>
 </DemoCanvas>
 
 ## Usage
 
-```tsx
-import { CopyButton } from "@/components/copy-button";
+```vue
+import { CopyButton } from "@/components/ui";
 ```
-```tsx
+```vue
 <CopyButton value="Text to copy" />
 ```
 
@@ -57,7 +57,7 @@ import { CopyButton } from "@/components/copy-button";
         typeDetails: "Button size. Options: sm, default, lg"
       },
       {
-        name: "className",
+        name: "class",
         type: "string",
         nameDetails: "Additional CSS classes"
       }

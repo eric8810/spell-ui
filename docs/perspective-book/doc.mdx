@@ -6,7 +6,7 @@ import { Demo as DemoTextured } from './demo-textured'
     <Demo />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo.tsx
+    ```vue file=./demo.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -15,23 +15,23 @@ import { Demo as DemoTextured } from './demo-textured'
 
 <InstallationTabs item="perspective-book">
 
-```tsx file=../../registry/spell-ui/perspective-book.tsx
+```vue file=../../vue/src/components/ui/PerspectiveBook.vue
 ```
 
 </InstallationTabs>
 
 ## Usage
 
-```tsx
-import { PerspectiveBook } from "@/components/perspective-book";
+```vue
+import { PerspectiveBook } from "@/components/ui";
 ```
-```tsx
+```vue
 <PerspectiveBook>
-  <div className="flex flex-col gap-4">
-    <h1 className="font-semibold leading-5">
+  <div class="flex flex-col gap-4">
+    <h1 class="font-semibold leading-5">
       Your complete platform for the Design.
     </h1>
-    <BookOpen className="size-5" />
+    <BookOpen class="size-5" />
   </div>
 </PerspectiveBook>
 ```
@@ -45,7 +45,7 @@ import { PerspectiveBook } from "@/components/perspective-book";
     <DemoTextured />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo-textured.tsx
+    ```vue file=./demo-textured.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -55,8 +55,8 @@ import { PerspectiveBook } from "@/components/perspective-book";
 <PropsTable
   data={[
     {
-      name: "children",
-      type: "React.ReactNode",
+      name: "default",
+      type: "VNodeChild",
       nameDetails: "The content to display inside the book"
     },
     {
@@ -66,7 +66,7 @@ import { PerspectiveBook } from "@/components/perspective-book";
       typeDetails: "Size of the book. Options: sm, default, lg"
     },
     {
-      name: "className",
+      name: "class",
       type: "string",
       nameDetails: "CSS classes for styling the book cover. Use Tailwind classes like bg-amber-500, bg-red-600, etc."
     },

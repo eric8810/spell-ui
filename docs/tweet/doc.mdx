@@ -5,7 +5,7 @@ import TweetDemo from "./demo";
     <TweetDemo />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo.tsx
+    ```vue file=./demo.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -13,17 +13,17 @@ import TweetDemo from "./demo";
 ## Installation
 
 <InstallationTabs item="tweet">
-```tsx file=../../registry/spell-ui/tweet.tsx
+```vue file=../../vue/src/components/ui/Tweet.vue
 ```
 </InstallationTabs>
 
 ## Usage
 
-```tsx
-import { Tweet } from "@/components/tweet";
+```vue
+import { Tweet } from "@/components/ui";
 ```
 
-```tsx
+```vue
 <Tweet id="1668408059125702661" />
 ```
 
@@ -37,7 +37,7 @@ import { Tweet } from "@/components/tweet";
       nameDetails: "The Twitter/X post ID to display",
     },
     {
-      name: "className",
+      name: "class",
       type: "string",
       nameDetails: "Additional CSS classes to apply to the tweet container",
     },

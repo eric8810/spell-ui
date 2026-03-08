@@ -6,7 +6,7 @@ import { Demo as DemoColors } from './demo-colors'
     <Demo />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo.tsx
+    ```vue file=./demo.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -14,7 +14,7 @@ import { Demo as DemoColors } from './demo-colors'
 ## Installation
 
 <InstallationTabs item="shimmer-text">
-```tsx file=../../registry/spell-ui/shimmer-text.tsx
+```vue file=../../vue/src/components/ui/ShimmerText.vue
 ```
 </InstallationTabs>
 
@@ -27,17 +27,17 @@ import { Demo as DemoColors } from './demo-colors'
     <DemoColors />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo-colors.tsx
+    ```vue file=./demo-colors.vue
     ```
   </DemoCode>
 </DemoCanvas>
 
 ## Usage
 
-```tsx
-import { ShimmerText } from "@/components/shimmer-text";
+```vue
+import { ShimmerText } from "@/components/ui";
 ```
-```tsx
+```vue
 <ShimmerText>Shimmer Effect</ShimmerText>
 ```
 
@@ -46,12 +46,12 @@ import { ShimmerText } from "@/components/shimmer-text";
 <PropsTable
   data={[
     {
-      name: "children",
-      type: "React.ReactNode",
+      name: "default",
+      type: "VNodeChild",
       nameDetails: "Text content to display with shimmer effect"
     },
     {
-      name: "className",
+      name: "class",
       type: "string",
       nameDetails: "Additional CSS classes"
     },

@@ -7,7 +7,7 @@ import { Demo as DemoStagger } from './demo-stagger'
     <Demo />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo.tsx
+    ```vue file=./demo.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -15,7 +15,7 @@ import { Demo as DemoStagger } from './demo-stagger'
 ## Installation
 
 <InstallationTabs item="words-stagger">
-```tsx file=../../registry/spell-ui/words-stagger.tsx
+```vue file=../../vue/src/components/ui/WordsStagger.vue
 ```
 </InstallationTabs>
 
@@ -28,7 +28,7 @@ import { Demo as DemoStagger } from './demo-stagger'
     <DemoSpeed />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo-speed.tsx
+    ```vue file=./demo-speed.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -40,18 +40,18 @@ import { Demo as DemoStagger } from './demo-stagger'
     <DemoStagger />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo-stagger.tsx
+    ```vue file=./demo-stagger.vue
     ```
   </DemoCode>
 </DemoCanvas>
 
 ## Usage
 
-```tsx
-import { WordsStagger } from "@/components/words-stagger";
+```vue
+import { WordsStagger } from "@/components/ui";
 ```
-```tsx
-<WordsStagger className="text-3xl font-semibold tracking-tight">
+```vue
+<WordsStagger class="text-3xl font-semibold tracking-tight">
   Your complete platform for the Design.
 </WordsStagger>
 ```
@@ -61,8 +61,8 @@ import { WordsStagger } from "@/components/words-stagger";
 <PropsTable
   data={[
     {
-      name: "children",
-      type: "React.ReactNode",
+      name: "default",
+      type: "VNodeChild",
       nameDetails: "The text content to animate"
     },
     {
@@ -90,7 +90,7 @@ import { WordsStagger } from "@/components/words-stagger";
       nameDetails: "Whether to start animation automatically on mount"
     },
     {
-      name: "className",
+      name: "class",
       type: "string",
       nameDetails: "Additional CSS classes for the container"
     },
@@ -105,7 +105,7 @@ import { WordsStagger } from "@/components/words-stagger";
       nameDetails: "Callback when animation completes"
     },
     {
-      name: "inView",
+      name: "in-view",
       type: "boolean",
       default: "false",
       nameDetails: "Whether to trigger animation only when element is in viewport"

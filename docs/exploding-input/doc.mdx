@@ -2,11 +2,11 @@ import { Demo } from './demo'
 
 
 <DemoCanvas>
-  <DemoPreview className="overflow-visible">
+  <DemoPreview class="overflow-visible">
     <Demo />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo.tsx
+    ```vue file=./demo.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -14,37 +14,29 @@ import { Demo } from './demo'
 ## Installation
 
 <InstallationTabs item="exploding-input">
-```tsx file=../../registry/spell-ui/exploding-input.tsx
+```vue file=../../vue/src/components/ui/ExplodingInput.vue
 ```
 </InstallationTabs>
 
 ## Usage
 
-```tsx
-import { ExplodingInput } from "@/components/exploding-input";
+```vue
+import { ExplodingInput } from "@/components/ui";
 ```
-```tsx
-<label className="block">
+```vue
+<label class="block">
   <input
     type="text"
     placeholder="try@spell.here"
-    className="w-72 p-0 h-10 text-base border-b bg-background font-medium placeholder:font-medium outline-none"
+    class="w-72 p-0 h-10 text-base border-b bg-background font-medium placeholder:font-medium outline-none"
   />
   <ExplodingInput
-  className="z-50"
-    content={[
-      <span key="1" className="text-4xl">🤩</span>,
-      <span key="2" className="text-4xl">👾</span>,
-      <span key="3" className="text-4xl">😺</span>,
-      <span key="4" className="text-4xl">👻</span>,
-      <span key="5" className="text-4xl">🎃</span>,
-      <span key="6" className="text-4xl">🖤</span>,
-      <span key="7" className="text-4xl">🗯️</span>,
-    ]}
-    direction={{ horizontal: "left", vertical: "top" }}
-    gravity={0.5}
-    duration={3}
-    count={3}
+    class="z-50"
+    :content='["🤩", "👾", "😺", "👻", "🎃", "🖤", "🗯️"]'
+    :direction='{ horizontal: "left", vertical: "top" }'
+    :gravity='0.5'
+    :duration='3'
+    :count='3'
   />
 </label>
 ```
@@ -55,9 +47,9 @@ import { ExplodingInput } from "@/components/exploding-input";
   data={[
     {
       name: "content",
-      type: "ReactNode[]",
+      type: "VNodeChild[]",
       default: "[]",
-      nameDetails: "Array of React nodes to render as particles"
+      nameDetails: "Array of VNodes or strings to render as particles"
     },
     {
       name: "count",
@@ -96,7 +88,7 @@ import { ExplodingInput } from "@/components/exploding-input";
       typeDetails: "value: initial rotation in degrees, animate: enable random rotation animation"
     },
     {
-      name: "className",
+      name: "class",
       type: "string",
       nameDetails: "CSS classes for the container"
     },

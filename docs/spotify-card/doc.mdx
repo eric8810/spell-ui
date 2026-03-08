@@ -6,7 +6,7 @@ import SpotifyCardCarouselDemo from "./demo-carousel";
     <SpotifyCardDemo />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo.tsx
+    ```vue file=./demo.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -14,7 +14,7 @@ import SpotifyCardCarouselDemo from "./demo-carousel";
 ## Installation
 
 <InstallationTabs item="spotify-card">
-```tsx file=../../registry/spell-ui/spotify-card.tsx
+```vue file=../../vue/src/components/ui/SpotifyCard.vue
 ```
 </InstallationTabs>
 
@@ -22,7 +22,7 @@ import SpotifyCardCarouselDemo from "./demo-carousel";
 
 This component requires an API route to fetch Spotify metadata. Create the following file:
 
-<code className="bg-muted/50 dark:text-neutral-300 text-neutral-600 p-1.5 rounded-md before:hidden after:hidden">app/api/spotify/route.ts</code>
+<code class="bg-muted/50 dark:text-neutral-300 text-neutral-600 p-1.5 rounded-md before:hidden after:hidden">app/api/spotify/route.ts</code>
 
 ```ts
 import { NextRequest, NextResponse } from "next/server";
@@ -79,18 +79,18 @@ export async function GET(request: NextRequest) {
     <SpotifyCardCarouselDemo />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo-carousel.tsx
+    ```vue file=./demo-carousel.vue
     ```
   </DemoCode>
 </DemoCanvas>
 
 ## Usage
 
-```tsx
-import { SpotifyCard } from "@/components/spotify-card";
+```vue
+import { SpotifyCard } from "@/components/ui";
 ```
 
-```tsx
+```vue
 <SpotifyCard url="https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT" />
 ```
 
@@ -104,7 +104,7 @@ import { SpotifyCard } from "@/components/spotify-card";
       nameDetails: "Spotify track, album, or playlist URL",
     },
     {
-      name: "className",
+      name: "class",
       type: "string",
       nameDetails: "Additional CSS classes to apply to the card",
     },

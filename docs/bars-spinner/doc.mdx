@@ -6,7 +6,7 @@ import BarsSpinnerDemoSizes from "./demo-sizes";
     <BarsSpinnerDemo />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo.tsx
+    ```vue file=./demo.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -14,7 +14,7 @@ import BarsSpinnerDemoSizes from "./demo-sizes";
 ## Installation
 
 <InstallationTabs item="bars-spinner">
-```tsx file=../../registry/spell-ui/bars-spinner.tsx
+```vue file=../../vue/src/components/ui/BarsSpinner.vue
 ```
 </InstallationTabs>
 
@@ -27,20 +27,20 @@ import BarsSpinnerDemoSizes from "./demo-sizes";
     <BarsSpinnerDemoSizes />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo-sizes.tsx
+    ```vue file=./demo-sizes.vue
     ```
   </DemoCode>
 </DemoCanvas>
 
 ## Usage
 
-```tsx
-import { BarsSpinner } from "@/components/bars-spinner";
+```vue
+import { BarsSpinner } from "@/components/ui";
 ```
 
-```tsx
-<BarsSpinner size={20} />
-<BarsSpinner size={16} color="rgba(255, 255, 255, 0.65)" />
+```vue
+<BarsSpinner :size='20' />
+<BarsSpinner :size='16' color="rgba(255, 255, 255, 0.65)" />
 ```
 
 ## Props
@@ -60,7 +60,7 @@ import { BarsSpinner } from "@/components/bars-spinner";
       nameDetails: "The color of the spinner bars",
     },
     {
-      name: "className",
+      name: "class",
       type: "string",
       nameDetails: "Additional CSS classes to apply to the spinner",
     },

@@ -6,7 +6,7 @@ import { Demo as DemoCount } from './demo-count'
     <Demo />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo.tsx
+    ```vue file=./demo.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -14,7 +14,7 @@ import { Demo as DemoCount } from './demo-count'
 ## Installation
 
 <InstallationTabs item="logos-carousel">
-```tsx file=../../registry/spell-ui/logos-carousel.tsx
+```vue file=../../vue/src/components/ui/LogosCarousel.vue
 ```
 </InstallationTabs>
 
@@ -29,19 +29,19 @@ Limit the number of logos displayed per row.
     <DemoCount />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo-count.tsx
+    ```vue file=./demo-count.vue
     ```
   </DemoCode>
 </DemoCanvas>
 
 ## Usage
 
-```tsx
-import { LogosCarousel } from "@/registry/spell-ui/logos-carousel";
+```vue
+import { LogosCarousel } from "@/components/ui";
 ```
 
-```tsx
-<LogosCarousel count={4}>
+```vue
+<LogosCarousel :count='4'>
   <YourLogo1 />
   <YourLogo2 />
   <YourLogo3 />
@@ -56,8 +56,8 @@ import { LogosCarousel } from "@/registry/spell-ui/logos-carousel";
 <PropsTable
   data={[
     {
-      name: "children",
-      type: "React.ReactNode",
+      name: "default",
+      type: "VNodeChild",
       nameDetails: "Logo elements to display in the carousel. The carousel will automatically group them based on the count prop."
     },
     {
@@ -72,7 +72,7 @@ import { LogosCarousel } from "@/registry/spell-ui/logos-carousel";
       nameDetails: "Number of logos to display per row. The carousel will automatically group children into sets of this size. If not specified, all logos will be displayed in a single group."
     },
     {
-      name: "className",
+      name: "class",
       type: "string",
       nameDetails: "Additional CSS classes to apply to the flex container. Use Tailwind gap classes (e.g., gap-4, gap-8) to control spacing between logos."
     },

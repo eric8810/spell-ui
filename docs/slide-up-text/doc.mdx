@@ -7,7 +7,7 @@ import { Demo as DemoStagger } from './demo-stagger'
     <Demo />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo.tsx
+    ```vue file=./demo.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -15,7 +15,7 @@ import { Demo as DemoStagger } from './demo-stagger'
 ## Installation
 
 <InstallationTabs item="slide-up-text">
-```tsx file=../../registry/spell-ui/slide-up-text.tsx
+```vue file=../../vue/src/components/ui/SlideUpText.vue
 ```
 </InstallationTabs>
 
@@ -28,7 +28,7 @@ import { Demo as DemoStagger } from './demo-stagger'
     <DemoSplit />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo-split.tsx
+    ```vue file=./demo-split.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -40,17 +40,17 @@ import { Demo as DemoStagger } from './demo-stagger'
     <DemoStagger />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo-stagger.tsx
+    ```vue file=./demo-stagger.vue
     ```
   </DemoCode>
 </DemoCanvas>
 
 ## Usage
 
-```tsx
-import { SlideUpText } from "@/components/slide-up-text";
+```vue
+import { SlideUpText } from "@/components/ui";
 ```
-```tsx
+```vue
 <SlideUpText>Your text here</SlideUpText>
 ```
 
@@ -59,8 +59,8 @@ import { SlideUpText } from "@/components/slide-up-text";
 <PropsTable
     data={[
       {
-        name: "children",
-        type: "React.ReactNode",
+        name: "default",
+        type: "VNodeChild",
         nameDetails: "The text content to animate"
       },
       {
@@ -100,7 +100,7 @@ import { SlideUpText } from "@/components/slide-up-text";
         nameDetails: "Whether to start animation automatically on mount"
       },
       {
-        name: "className",
+        name: "class",
         type: "string",
         nameDetails: "Additional CSS classes for the container"
       },
@@ -125,7 +125,7 @@ import { SlideUpText } from "@/components/slide-up-text";
         nameDetails: "Callback when animation completes"
       },
       {
-        name: "inView",
+        name: "in-view",
         type: "boolean",
         default: "false",
         nameDetails: "Whether to trigger animation only when element is in viewport"

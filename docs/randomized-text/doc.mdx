@@ -6,7 +6,7 @@ import { Demo as DemoSplit } from './demo-split'
     <Demo />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo.tsx
+    ```vue file=./demo.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -14,7 +14,7 @@ import { Demo as DemoSplit } from './demo-split'
 ## Installation
 
 <InstallationTabs item="randomized-text">
-```tsx file=../../registry/spell-ui/randomized-text.tsx
+```vue file=../../vue/src/components/ui/RandomizedText.vue
 ```
 </InstallationTabs>
 
@@ -27,18 +27,18 @@ import { Demo as DemoSplit } from './demo-split'
     <DemoSplit />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo-split.tsx
+    ```vue file=./demo-split.vue
     ```
   </DemoCode>
 </DemoCanvas>
 
 ## Usage
 
-```tsx
-import { RandomizedText } from "@/components/randomized-text";
+```vue
+import { RandomizedText } from "@/components/ui";
 ```
 
-```tsx
+```vue
 <RandomizedText>You can just ship things.</RandomizedText>
 ```
 
@@ -47,13 +47,13 @@ import { RandomizedText } from "@/components/randomized-text";
 <PropsTable
   data={[
     {
-      name: "children",
+      name: "default",
       type: "string",
       required: true,
       nameDetails: "The text to display with randomized animation"
     },
     {
-      name: "className",
+      name: "class",
       type: "string",
       nameDetails: "Additional CSS classes for the container"
     },
@@ -70,7 +70,7 @@ import { RandomizedText } from "@/components/randomized-text";
       nameDetails: "Base delay before animation starts"
     },
     {
-      name: "inView",
+      name: "in-view",
       type: "boolean",
       default: "false",
       nameDetails: "Whether to trigger animation only when element is in viewport"

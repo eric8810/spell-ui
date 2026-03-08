@@ -7,7 +7,7 @@ import { Demo as DemoVertical } from './demo-vertical'
     <Demo />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo.tsx
+    ```vue file=./demo.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -15,7 +15,7 @@ import { Demo as DemoVertical } from './demo-vertical'
 ## Installation
 
 <InstallationTabs item="marquee">
-```tsx file=../../registry/spell-ui/marquee.tsx
+```vue file=../../vue/src/components/ui/Marquee.vue
 ```
 </InstallationTabs>
 
@@ -28,7 +28,7 @@ import { Demo as DemoVertical } from './demo-vertical'
     <DemoPause />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo-pause.tsx
+    ```vue file=./demo-pause.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -40,22 +40,22 @@ import { Demo as DemoVertical } from './demo-vertical'
     <DemoVertical />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo-vertical.tsx
+    ```vue file=./demo-vertical.vue
     ```
   </DemoCode>
 </DemoCanvas>
 
 ## Usage
 
-```tsx
-import { Marquee } from "@/registry/spell-ui/marquee";
+```vue
+import { Marquee } from "@/components/ui";
 ```
 
-```tsx
+```vue
 <Marquee>
-  <div className="mx-6">Content 1</div>
-  <div className="mx-6">Content 2</div>
-  <div className="mx-6">Content 3</div>
+  <div class="mx-6">Content 1</div>
+  <div class="mx-6">Content 2</div>
+  <div class="mx-6">Content 3</div>
 </Marquee>
 ```
 
@@ -70,7 +70,7 @@ import { Marquee } from "@/registry/spell-ui/marquee";
       nameDetails: "Animation duration in seconds"
     },
     {
-      name: "pauseOnHover",
+      name: "pause-on-hover",
       type: "boolean",
       default: "false",
       nameDetails: "Whether to pause animation on hover"
@@ -94,13 +94,13 @@ import { Marquee } from "@/registry/spell-ui/marquee";
       nameDetails: "Percentage of fade gradient (0-100)"
     },
     {
-      name: "className",
+      name: "class",
       type: "string",
       nameDetails: "Additional CSS classes"
     },
     {
-      name: "children",
-      type: "React.ReactNode",
+      name: "default",
+      type: "VNodeChild",
       required: true,
       nameDetails: "Content to display in the marquee"
     }

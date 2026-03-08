@@ -7,7 +7,7 @@ import { Demo as DemoColors } from './demo-colors'
     <Demo />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo.tsx
+    ```vue file=./demo.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -15,7 +15,7 @@ import { Demo as DemoColors } from './demo-colors'
 ## Installation
 
 <InstallationTabs item="flow-button">
-```tsx file=../../registry/spell-ui/flow-button.tsx
+```vue file=../../vue/src/components/ui/FlowButton.vue
 ```
 </InstallationTabs>
 
@@ -28,7 +28,7 @@ import { Demo as DemoColors } from './demo-colors'
     <DemoSizes />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo-sizes.tsx
+    ```vue file=./demo-sizes.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -40,17 +40,17 @@ import { Demo as DemoColors } from './demo-colors'
     <DemoColors />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo-colors.tsx
+    ```vue file=./demo-colors.vue
     ```
   </DemoCode>
 </DemoCanvas>
 
 ## Usage
 
-```tsx
-import { FlowButton } from "@/components/flow-button";
+```vue
+import { FlowButton } from "@/components/ui";
 ```
-```tsx
+```vue
 <FlowButton>Click me</FlowButton>
 ```
 
@@ -59,8 +59,8 @@ import { FlowButton } from "@/components/flow-button";
 <PropsTable
     data={[
       {
-        name: "children",
-        type: "React.ReactNode",
+        name: "default",
+        type: "VNodeChild",
         nameDetails: "The content of the button"
       },
       {
@@ -76,7 +76,7 @@ import { FlowButton } from "@/components/flow-button";
         nameDetails: "The color of the dashed border (CSS color value)"
       },
       {
-        name: "className",
+        name: "class",
         type: "string",
         nameDetails: "Additional CSS classes"
       },

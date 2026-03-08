@@ -1,4 +1,4 @@
-import { PropsTable } from "@/components/props-table";
+import { PropsTable } from "@/components/ui";
 import SpinnerDemo from "./demo";
 import SpinnerDemoSizes from "./demo-sizes";
 import SpinnerDemoColors from "./demo-colors";
@@ -9,7 +9,7 @@ import SpinnerDemoSpeeds from "./demo-speeds";
     <SpinnerDemo />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo.tsx
+    ```vue file=./demo.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -17,7 +17,7 @@ import SpinnerDemoSpeeds from "./demo-speeds";
 ## Installation
 
 <InstallationTabs item="spinner">
-```tsx file=../../registry/spell-ui/spinner.tsx
+```vue file=../../vue/src/components/ui/Spinner.vue
 ```
 </InstallationTabs>
 
@@ -30,7 +30,7 @@ import SpinnerDemoSpeeds from "./demo-speeds";
     <SpinnerDemoSizes />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo-sizes.tsx
+    ```vue file=./demo-sizes.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -42,7 +42,7 @@ import SpinnerDemoSpeeds from "./demo-speeds";
     <SpinnerDemoColors />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo-colors.tsx
+    ```vue file=./demo-colors.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -54,18 +54,18 @@ import SpinnerDemoSpeeds from "./demo-speeds";
     <SpinnerDemoSpeeds />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo-speeds.tsx
+    ```vue file=./demo-speeds.vue
     ```
   </DemoCode>
 </DemoCanvas>
 
 ## Usage
 
-```tsx
-import { Spinner } from "@/components/spinner";
+```vue
+import { Spinner } from "@/components/ui";
 ```
 
-```tsx
+```vue
 <Spinner />
 ```
 
@@ -86,7 +86,7 @@ import { Spinner } from "@/components/spinner";
       nameDetails: "The animation speed of the spinner",
     },
     {
-      name: "className",
+      name: "class",
       type: "string",
       nameDetails: "Additional CSS classes to apply to the spinner",
     },

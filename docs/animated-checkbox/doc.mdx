@@ -5,7 +5,7 @@ import { Demo } from './demo'
     <Demo />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo.tsx
+    ```vue file=./demo.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -13,18 +13,18 @@ import { Demo } from './demo'
 ## Installation
 
 <InstallationTabs item="animated-checkbox">
-```tsx file=../../registry/spell-ui/animated-checkbox.tsx
+```vue file=../../vue/src/components/ui/AnimatedCheckbox.vue
 ```
 </InstallationTabs>
 
 ## Usage
 
-```tsx
-import { AnimatedCheckbox } from "@/components/animated-checkbox";
+```vue
+import { AnimatedCheckbox } from "@/components/ui";
 ```
-```tsx
+```vue
 <AnimatedCheckbox title="Task to complete" />
-<AnimatedCheckbox title="Already done" defaultChecked />
+<AnimatedCheckbox title="Already done" default-checked />
 ```
 
 ## Props
@@ -38,18 +38,18 @@ import { AnimatedCheckbox } from "@/components/animated-checkbox";
       nameDetails: "The label text for the checkbox"
     },
     {
-      name: "defaultChecked",
+      name: "default-checked",
       type: "boolean",
       default: "false",
       nameDetails: "Initial checked state"
     },
     {
-      name: "onCheckedChange",
+      name: "@checked-change",
       type: "(checked: boolean) => void",
       nameDetails: "Callback when checked state changes"
     },
     {
-      name: "className",
+      name: "class",
       type: "string",
       nameDetails: "Additional CSS classes"
     }

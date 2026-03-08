@@ -7,7 +7,7 @@ import { Demo as DemoCustom } from './demo-custom'
     <Demo />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo.tsx
+    ```vue file=./demo.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -15,7 +15,7 @@ import { Demo as DemoCustom } from './demo-custom'
 ## Installation
 
 <InstallationTabs item="kbd">
-```tsx file=../../registry/spell-ui/kbd.tsx
+```vue file=../../vue/src/components/ui/Kbd.vue
 ```
 </InstallationTabs>
 
@@ -28,7 +28,7 @@ import { Demo as DemoCustom } from './demo-custom'
     <DemoSymbols />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo-symbols.tsx
+    ```vue file=./demo-symbols.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -40,20 +40,20 @@ import { Demo as DemoCustom } from './demo-custom'
     <DemoCustom />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo-custom.tsx
+    ```vue file=./demo-custom.vue
     ```
   </DemoCode>
 </DemoCanvas>
 
 ## Usage
 
-```tsx
-import { Kbd } from "@/components/kbd";
+```vue
+import { Kbd } from "@/components/ui";
 ```
-```tsx
-<Kbd keys={["cmd", "K"]} />
-<Kbd keys={["ctrl", "shift", "P"]} />
-<Kbd keys={["alt", "tab"]} />
+```vue
+<Kbd :keys='["cmd", "K"]' />
+<Kbd :keys='["ctrl", "shift", "P"]' />
+<Kbd :keys='["alt", "tab"]' />
 ```
 
 ## Props
@@ -67,7 +67,7 @@ import { Kbd } from "@/components/kbd";
       typeDetails: "Each item can be a string or an object with display (shown text) and key (listened key). Supported keys: command/cmd, control/ctrl, alt/option, shift, enter/return, escape/esc, tab, space, delete/backspace, arrowleft/left, arrowdown/down, arrowup/up, arrowright/right, or any letter/number"
     },
     {
-      name: "className",
+      name: "class",
       type: "string",
       nameDetails: "Additional CSS classes for the component"
     },

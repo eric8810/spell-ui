@@ -7,7 +7,7 @@ import { Demo as DemoColors } from './demo-colors'
     <Demo />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo.tsx
+    ```vue file=./demo.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -15,7 +15,7 @@ import { Demo as DemoColors } from './demo-colors'
 ## Installation
 
 <InstallationTabs item="label-input">
-```tsx file=../../registry/spell-ui/label-input.tsx
+```vue file=../../vue/src/components/ui/LabelInput.vue
 ```
 </InstallationTabs>
 
@@ -28,7 +28,7 @@ import { Demo as DemoColors } from './demo-colors'
     <DemoPassword />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo-password.tsx
+    ```vue file=./demo-password.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -40,20 +40,20 @@ import { Demo as DemoColors } from './demo-colors'
     <DemoColors />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo-colors.tsx
+    ```vue file=./demo-colors.vue
     ```
   </DemoCode>
 </DemoCanvas>
 
 ## Usage
 
-```tsx
-import { LabelInput } from "@/components/label-input";
+```vue
+import { LabelInput } from "@/components/ui";
 ```
-```tsx
+```vue
 <LabelInput label="Email" type="email" />
 <LabelInput label="Password" type="password" />
-<LabelInput label="Name" ringColor="blue" />
+<LabelInput label="Name" ring-color="blue" />
 ```
 
 ## Props
@@ -67,18 +67,18 @@ import { LabelInput } from "@/components/label-input";
       nameDetails: "Floating label text"
     },
     {
-      name: "ringColor",
+      name: "ring-color",
       type: "RingColor",
       default: "muted",
       typeDetails: "Focus ring color. Options: muted, primary, secondary, destructive, red, blue, green, yellow, purple, pink, orange, cyan, indigo, violet, rose, amber, lime, emerald, sky, slate, fuchsia"
     },
     {
-      name: "containerClassName",
+      name: "container-class",
       type: "string",
       nameDetails: "CSS classes for the container div"
     },
     {
-      name: "className",
+      name: "class",
       type: "string",
       nameDetails: "CSS classes for the input element"
     },

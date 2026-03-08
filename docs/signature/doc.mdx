@@ -6,7 +6,7 @@ import { DemoContrast } from './demo-contrast'
     <Demo />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo.tsx
+    ```vue file=./demo.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -14,11 +14,11 @@ import { DemoContrast } from './demo-contrast'
 ## Installation
 
 <InstallationTabs item="signature">
-```tsx file=../../registry/spell-ui/signature.tsx
+```vue file=../../vue/src/components/ui/Signature.vue
 ```
 </InstallationTabs>
 
-> Place the [LastoriaBoldRegular.otf](https://spell.sh/LastoriaBoldRegular.otf) font file inside your <code className="bg-muted/50 dark:text-neutral-300 text-neutral-600 p-1.5 rounded-md before:hidden after:hidden">public</code> directory or update the path in the component to load a different font.
+> Place the [LastoriaBoldRegular.otf](https://spell.sh/LastoriaBoldRegular.otf) font file inside your <code class="bg-muted/50 dark:text-neutral-300 text-neutral-600 p-1.5 rounded-md before:hidden after:hidden">public</code> directory or update the path in the component to load a different font.
 
 
 ## Examples
@@ -30,18 +30,18 @@ import { DemoContrast } from './demo-contrast'
     <DemoContrast />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo-contrast.tsx
+    ```vue file=./demo-contrast.vue
     ```
   </DemoCode>
 </DemoCanvas>
 
 ## Usage
 
-```tsx
-import { Signature } from "@/components/signature";
+```vue
+import { Signature } from "@/components/ui";
 ```
-```tsx
-<Signature text="Spell Studio" fontSize={16} color="#000" />
+```vue
+<Signature text="Spell Studio" :font-size='16' color="#000" />
 ```
 
 ## Props
@@ -79,12 +79,12 @@ import { Signature } from "@/components/signature";
       nameDetails: "Delay before the first character starts animating (in seconds)"
     },
     {
-      name: "className",
+      name: "class",
       type: "string",
       nameDetails: "Additional CSS classes to apply to the SVG element"
     },
     {
-      name: "inView",
+      name: "in-view",
       type: "boolean",
       default: "false",
       nameDetails: "Whether to trigger animation only when element is in viewport"

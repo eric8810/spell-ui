@@ -7,7 +7,7 @@ import { Demo as DemoSizes } from './demo-sizes'
     <Demo />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo.tsx
+    ```vue file=./demo.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -15,7 +15,7 @@ import { Demo as DemoSizes } from './demo-sizes'
 ## Installation
 
 <InstallationTabs item="badge">
-```tsx file=../../registry/spell-ui/badge.tsx
+```vue file=../../vue/src/components/ui/Badge.vue
 ```
 </InstallationTabs>
 
@@ -28,7 +28,7 @@ import { Demo as DemoSizes } from './demo-sizes'
     <DemoColors />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo-colors.tsx
+    ```vue file=./demo-colors.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -40,17 +40,17 @@ import { Demo as DemoSizes } from './demo-sizes'
     <DemoSizes />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo-sizes.tsx
+    ```vue file=./demo-sizes.vue
     ```
   </DemoCode>
 </DemoCanvas>
 
 ## Usage
 
-```tsx
-import { Badge } from "@/components/badge";
+```vue
+import { Badge } from "@/components/ui";
 ```
-```tsx
+```vue
 <Badge>Default</Badge>
 <Badge variant="blue">Blue</Badge>
 <Badge size="sm">Small</Badge>
@@ -61,8 +61,8 @@ import { Badge } from "@/components/badge";
 <PropsTable
   data={[
     {
-      name: "children",
-      type: "React.ReactNode",
+      name: "default",
+      type: "VNodeChild",
       nameDetails: "The content of the badge"
     },
     {
@@ -84,7 +84,7 @@ import { Badge } from "@/components/badge";
       nameDetails: "Merge props with child element"
     },
     {
-      name: "className",
+      name: "class",
       type: "string",
       nameDetails: "Additional CSS classes"
     }

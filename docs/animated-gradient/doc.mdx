@@ -2,11 +2,11 @@ import { Demo } from './demo'
 import { DemoPresets } from './demo-presets'
 
 <DemoCanvas>
-  <DemoPreview className="p-0">
+  <DemoPreview class="p-0">
     <Demo />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo.tsx
+    ```vue file=./demo.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -14,7 +14,7 @@ import { DemoPresets } from './demo-presets'
 ## Installation
 
 <InstallationTabs item="animated-gradient">
-```tsx file=../../registry/spell-ui/animated-gradient.tsx
+```vue file=../../vue/src/components/ui/AnimatedGradient.vue
 ```
 </InstallationTabs>
 
@@ -23,41 +23,39 @@ import { DemoPresets } from './demo-presets'
 ### Presets
 
 <DemoCanvas>
-  <DemoPreview className="p-0">
+  <DemoPreview class="p-0">
     <DemoPresets />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo-presets.tsx
+    ```vue file=./demo-presets.vue
     ```
   </DemoCode>
 </DemoCanvas>
 
 ## Usage
 
-```tsx
-import AnimatedGradient from "@/components/animated-gradient";
+```vue
+import { AnimatedGradient } from "@/components/ui";
 ```
 
-```tsx
-<div className="relative h-[300px] w-full">
-  <AnimatedGradient config={{ preset: "Prism" }} />
-  <div className="relative z-10">Your content here</div>
+```vue
+<div class="relative h-[300px] w-full">
+  <AnimatedGradient :config='{ preset: "Prism" }' />
+  <div class="relative z-10">Your content here</div>
 </div>
 ```
 
 ### Custom Configuration
 
-```tsx
+```vue
 <AnimatedGradient
-  config={{
-    preset: "custom",
+  :config='{ preset: "custom",
     color1: "#1a1a2e",
     color2: "#16213e",
     color3: "#0f3460",
     rotation: 45,
     speed: 25,
-    swirl: 60,
-  }}
+    swirl: 60, }'
 />
 ```
 
@@ -83,7 +81,7 @@ import AnimatedGradient from "@/components/animated-gradient";
       nameDetails: "Border radius of the container"
     },
     {
-      name: "className",
+      name: "class",
       type: "string",
       nameDetails: "Additional CSS classes"
     },

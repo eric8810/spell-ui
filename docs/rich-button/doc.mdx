@@ -7,7 +7,7 @@ import { Demo as DemoSizes } from './demo-sizes'
     <Demo />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo.tsx
+    ```vue file=./demo.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -15,7 +15,7 @@ import { Demo as DemoSizes } from './demo-sizes'
 ## Installation
 
 <InstallationTabs item="rich-button">
-```tsx file=../../registry/spell-ui/rich-button.tsx
+```vue file=../../vue/src/components/ui/RichButton.vue
 ```
 </InstallationTabs>
 
@@ -28,7 +28,7 @@ import { Demo as DemoSizes } from './demo-sizes'
     <DemoColored />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo-colored.tsx
+    ```vue file=./demo-colored.vue
     ```
   </DemoCode>
 </DemoCanvas>
@@ -40,17 +40,17 @@ import { Demo as DemoSizes } from './demo-sizes'
     <DemoSizes />
   </DemoPreview>
   <DemoCode>
-    ```tsx file=./demo-sizes.tsx
+    ```vue file=./demo-sizes.vue
     ```
   </DemoCode>
 </DemoCanvas>
 
 ## Usage
 
-```tsx
-import { RichButton } from "@/components/rich-button";
+```vue
+import { RichButton } from "@/components/ui";
 ```
-```tsx
+```vue
 <RichButton>Default</RichButton>
 ```
 
@@ -59,8 +59,8 @@ import { RichButton } from "@/components/rich-button";
 <PropsTable
     data={[
       {
-        name: "children",
-        type: "React.ReactNode",
+        name: "default",
+        type: "VNodeChild",
         nameDetails: "The content of the button"
       },
       {
@@ -76,7 +76,7 @@ import { RichButton } from "@/components/rich-button";
         nameDetails: "The size of the button"
       },
       {
-        name: "className",
+        name: "class",
         type: "string",
         nameDetails: "Additional CSS classes"
       },
