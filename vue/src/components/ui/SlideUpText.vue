@@ -9,6 +9,7 @@ import {
   onMounted,
   ref,
   useSlots,
+  watch,
   isVNode,
   type VNodeChild,
 } from 'vue'
@@ -285,6 +286,12 @@ const reset = () => {
   hasCompleted.value = false
 }
 
+const scheduleStartAnimation = () => {
+  window.requestAnimationFrame(() => {
+    startAnimation()
+  })
+}
+
 const handleTransitionEnd = () => {
   if (!isAnimating.value || hasCompleted.value) {
     return
@@ -295,6 +302,9 @@ const handleTransitionEnd = () => {
 }
 
 const observeVisibility = () => {
+  observer?.disconnect()
+  observer = null
+
   if (!props.inView || !rootRef.value) {
     return
   }
@@ -314,9 +324,11 @@ const observeVisibility = () => {
           observer?.disconnect()
           observer = null
         }
+      } else if (!props.once) {
+        reset()
       }
     },
-    { threshold: 0.2 },
+    { threshold: 0 },
   )
 
   observer.observe(rootRef.value)
@@ -326,11 +338,28 @@ onMounted(async () => {
   await nextTick()
 
   if (props.autoStart && !props.inView) {
-    startAnimation()
+    scheduleStartAnimation()
   }
 
   observeVisibility()
 })
+
+watch(
+  () => [props.inView, props.once, props.autoStart],
+  async () => {
+    await nextTick()
+    observeVisibility()
+
+    if (!props.inView) {
+      if (props.autoStart) {
+        reset()
+        scheduleStartAnimation()
+      } else {
+        reset()
+      }
+    }
+  },
+)
 
 onBeforeUnmount(() => {
   observer?.disconnect()

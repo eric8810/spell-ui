@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import SplitTextReveal from '@/demos/shared/SplitTextReveal.vue'
+import { BlurReveal } from '@/components/ui'
 
 interface Props {
   variant?: 'default' | 'speed'
@@ -11,26 +11,31 @@ const props = withDefaults(defineProps<Props>(), {
 </script>
 
 <template>
-  <SplitTextReveal
+  <BlurReveal
     v-if="props.variant === 'default'"
-    text="You can just ship things."
     class="text-2xl font-medium tracking-[-.03em] md:text-4xl"
-    :stagger="0.02"
-    :duration="0.34"
-  />
+  >
+    You can just ship things.
+  </BlurReveal>
 
   <div v-else class="flex flex-col gap-8 *:flex-col">
     <div>
       <p class="text-sm font-mono text-muted-foreground">SLOW (0.5)</p>
-      <SplitTextReveal text="You can just ship things." class="text-2xl font-medium tracking-tight" :stagger="0.06" :duration="0.5" />
+      <BlurReveal class="text-2xl font-medium tracking-tight" :speed-reveal="0.5" in-view>
+        You can just ship things.
+      </BlurReveal>
     </div>
     <div>
       <p class="text-sm font-mono text-muted-foreground">NORMAL (1.5)</p>
-      <SplitTextReveal text="You can just ship things." class="text-2xl font-medium tracking-tight" :stagger="0.03" :duration="0.36" />
+      <BlurReveal class="text-2xl font-medium tracking-tight" :speed-reveal="1.5" in-view>
+        You can just ship things.
+      </BlurReveal>
     </div>
     <div>
       <p class="text-sm font-mono text-muted-foreground">FAST (2)</p>
-      <SplitTextReveal text="You can just ship things." class="text-2xl font-medium tracking-tight" :stagger="0.018" :duration="0.28" />
+      <BlurReveal class="text-2xl font-medium tracking-tight" :speed-reveal="2" in-view>
+        You can just ship things.
+      </BlurReveal>
     </div>
   </div>
 </template>

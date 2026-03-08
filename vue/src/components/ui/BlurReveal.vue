@@ -1,14 +1,18 @@
 <script setup lang="ts">
+import { animate, inView, stagger } from 'motion'
 import {
   Comment,
   Fragment,
   Text,
   computed,
   isVNode,
+  nextTick,
   onBeforeUnmount,
   onMounted,
   ref,
+  resolveDynamicComponent,
   useSlots,
+  watch,
   type CSSProperties,
   type VNodeChild,
 } from 'vue'
@@ -21,7 +25,10 @@ interface Props {
   speedReveal?: number
   speedSegment?: number
   trigger?: boolean
+  as?: keyof HTMLElementTagNameMap
   inView?: boolean
+  once?: boolean
+  letterSpacing?: string | number
   style?: CSSProperties
 }
 
@@ -30,17 +37,31 @@ const props = withDefaults(defineProps<Props>(), {
   class: '',
   delay: 0,
   speedReveal: 1.5,
-  speedSegment: 0.4,
+  speedSegment: 0.5,
   trigger: true,
+  as: 'p',
   inView: false,
+  once: true,
+  letterSpacing: undefined,
   style: () => ({}),
 })
 
+const emit = defineEmits<{
+  animationStart: []
+  animationComplete: []
+}>()
+
 const slots = useSlots()
 const rootRef = ref<HTMLElement | null>(null)
-const active = ref(false)
-let observer: IntersectionObserver | null = null
-let startTimer: number | null = null
+const shouldRender = ref(props.trigger)
+
+let stopInView: VoidFunction | null = null
+let containerAnimation: ReturnType<typeof animate> | null = null
+let itemAnimation: ReturnType<typeof animate> | null = null
+let sequenceId = 0
+let hasPlayed = false
+
+const MotionTag = computed(() => resolveDynamicComponent(props.as))
 
 const extractText = (value: VNodeChild): string => {
   if (Array.isArray(value)) {
@@ -87,91 +108,332 @@ const textContent = computed(() => {
   return extractText(nodes as VNodeChild[]).replace(/\s+/g, ' ').trim()
 })
 
-const items = computed(() =>
-  Array.from(textContent.value).map((char, index) => ({
-    key: `char-${index}`,
-    content: char === ' ' ? '\u00A0' : char,
+const words = computed(() =>
+  textContent.value.split(' ').map((word, wordIndex, source) => ({
+    key: `word-${wordIndex}`,
+    characters: Array.from(word).map((char, charIndex) => ({
+      key: `char-${wordIndex}-${charIndex}`,
+      content: char,
+    })),
+    hasTrailingSpace: wordIndex < source.length - 1,
   })),
 )
 
-const duration = computed(() =>
-  props.speedSegment > 0
-    ? props.speedSegment
-    : Math.max(0.24, 0.25 / Math.max(props.speedReveal, 0.1) + 0.15),
-)
+const baseDuration = computed(() => 0.3 / Math.max(props.speedSegment, 0.01))
+const staggerInterval = computed(() => 0.03 / Math.max(props.speedReveal, 0.1))
 
-const stagger = computed(() => Math.max(0.015, 0.03 / Math.max(props.speedReveal, 0.1)))
+const letterSpacingStyle = computed<CSSProperties | undefined>(() => {
+  if (props.letterSpacing === undefined) {
+    return undefined
+  }
 
-const getItemStyle = (index: number) => ({
-  transitionDelay: `${props.delay + index * stagger.value}s`,
-  transitionDuration: `${duration.value}s`,
+  return {
+    marginRight: typeof props.letterSpacing === 'number'
+      ? `${props.letterSpacing}px`
+      : props.letterSpacing,
+  }
 })
 
-const clearStartTimer = () => {
-  if (startTimer !== null) {
-    window.clearTimeout(startTimer)
-    startTimer = null
+const getItems = () =>
+  Array.from(rootRef.value?.querySelectorAll<HTMLElement>('[data-blur-reveal-item]') ?? [])
+
+const stopAnimations = () => {
+  if (containerAnimation) {
+    containerAnimation.stop()
+    containerAnimation = null
+  }
+
+  if (itemAnimation) {
+    itemAnimation.stop()
+    itemAnimation = null
   }
 }
 
-const start = () => {
-  clearStartTimer()
+const applyHiddenState = (hideContainer: boolean) => {
+  if (rootRef.value) {
+    rootRef.value.style.opacity = hideContainer ? '0' : '1'
+  }
+
+  for (const item of getItems()) {
+    item.style.opacity = '0'
+    item.style.filter = 'blur(12px)'
+    item.style.transform = 'translateY(10px)'
+  }
+}
+
+const emitCompleteIfCurrent = (currentSequence: number) => {
+  if (sequenceId === currentSequence) {
+    emit('animationComplete')
+  }
+}
+
+const reveal = async () => {
+  const currentSequence = ++sequenceId
+  stopAnimations()
+
   if (!props.trigger) {
-    active.value = false
+    shouldRender.value = false
     return
   }
 
-  startTimer = window.setTimeout(() => {
-    active.value = true
-  }, props.delay * 1000)
+  shouldRender.value = true
+  await nextTick()
+
+  if (sequenceId !== currentSequence || !rootRef.value) {
+    return
+  }
+
+  applyHiddenState(true)
+  emit('animationStart')
+
+  containerAnimation = animate(rootRef.value, { opacity: 1 })
+  const items = getItems()
+
+  if (!items.length) {
+    emitCompleteIfCurrent(currentSequence)
+    return
+  }
+
+  itemAnimation = animate(
+    items,
+    { opacity: 1, filter: 'blur(0px)', y: 0 },
+    {
+      duration: baseDuration.value,
+      delay: stagger(staggerInterval.value, { startDelay: props.delay }),
+    },
+  )
+
+  itemAnimation.then(() => {
+    emitCompleteIfCurrent(currentSequence)
+  })
 }
 
-onMounted(() => {
-  if (props.inView && rootRef.value) {
-    observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry?.isIntersecting) {
-          start()
-          observer?.disconnect()
-          observer = null
-        }
-      },
-      { threshold: 0.2 },
-    )
-    observer.observe(rootRef.value)
+const hideForViewport = async () => {
+  const currentSequence = ++sequenceId
+  stopAnimations()
+  await nextTick()
+
+  if (sequenceId !== currentSequence || !rootRef.value) {
     return
   }
 
-  start()
+  emit('animationStart')
+  containerAnimation = animate(rootRef.value, { opacity: 0 })
+
+  const items = getItems()
+  if (!items.length) {
+    emitCompleteIfCurrent(currentSequence)
+    return
+  }
+
+  itemAnimation = animate(items, { opacity: 0, filter: 'blur(12px)', y: 10 })
+  itemAnimation.then(() => {
+    emitCompleteIfCurrent(currentSequence)
+  })
+}
+
+const exitPresence = async () => {
+  const currentSequence = ++sequenceId
+  stopAnimations()
+  await nextTick()
+
+  if (sequenceId !== currentSequence || !rootRef.value) {
+    shouldRender.value = false
+    return
+  }
+
+  const items = getItems()
+
+  if (!items.length) {
+    shouldRender.value = false
+    emit('animationComplete')
+    return
+  }
+
+  emit('animationStart')
+  itemAnimation = animate(
+    items,
+    { opacity: 0, filter: 'blur(12px)', y: 10 },
+    { delay: stagger(staggerInterval.value, { from: 'last' }) },
+  )
+
+  itemAnimation.then(() => {
+    if (sequenceId !== currentSequence) {
+      return
+    }
+
+    shouldRender.value = false
+    emit('animationComplete')
+  })
+}
+
+const setupViewportObserver = async () => {
+  stopInView?.()
+  stopInView = null
+
+  if (!props.inView) {
+    hasPlayed = false
+    return
+  }
+
+  await nextTick()
+
+  if (!rootRef.value) {
+    return
+  }
+
+  stopInView = inView(
+    rootRef.value,
+    () => {
+      if (props.once && hasPlayed) {
+        return
+      }
+
+      hasPlayed = true
+      void reveal()
+
+      if (props.once) {
+        return
+      }
+
+      return () => {
+        if (props.trigger) {
+          void hideForViewport()
+        }
+      }
+    },
+    { amount: 0 },
+  )
+}
+
+watch(
+  () => props.trigger,
+  async (trigger) => {
+    stopInView?.()
+    stopInView = null
+
+    if (trigger) {
+      shouldRender.value = true
+      await nextTick()
+      applyHiddenState(true)
+
+      if (props.inView) {
+        await setupViewportObserver()
+      } else {
+        await reveal()
+      }
+
+      return
+    }
+
+    if (shouldRender.value) {
+      await exitPresence()
+    } else {
+      stopAnimations()
+    }
+  },
+)
+
+watch(
+  [() => props.inView, () => props.once],
+  async ([inViewEnabled]) => {
+    if (!props.trigger) {
+      shouldRender.value = false
+      return
+    }
+
+    shouldRender.value = true
+    await nextTick()
+    applyHiddenState(true)
+
+    if (!inViewEnabled) {
+      hasPlayed = false
+      stopInView?.()
+      stopInView = null
+      await reveal()
+      return
+    }
+
+    await setupViewportObserver()
+  },
+)
+
+watch(
+  [() => props.delay, () => props.speedReveal, () => props.speedSegment, textContent],
+  async () => {
+    if (!props.trigger) {
+      return
+    }
+
+    hasPlayed = false
+    shouldRender.value = true
+    await nextTick()
+    applyHiddenState(true)
+
+    if (props.inView) {
+      await setupViewportObserver()
+    } else {
+      await reveal()
+    }
+  },
+)
+
+onMounted(async () => {
+  if (!props.trigger) {
+    shouldRender.value = false
+    return
+  }
+
+  shouldRender.value = true
+  await nextTick()
+  applyHiddenState(true)
+
+  if (props.inView) {
+    await setupViewportObserver()
+    return
+  }
+
+  await reveal()
 })
 
 onBeforeUnmount(() => {
-  observer?.disconnect()
-  clearStartTimer()
+  stopInView?.()
+  stopInView = null
+  stopAnimations()
 })
 </script>
 
 <template>
-  <span
+  <component
+    :is="MotionTag"
+    v-if="shouldRender"
     ref="rootRef"
-    :class="cn('inline-flex flex-wrap', props.class)"
+    :class="cn(props.class)"
     :style="props.style"
-    :aria-label="textContent"
   >
     <span class="sr-only">{{ textContent }}</span>
     <span
-      v-for="(item, index) in items"
-      :key="item.key"
+      v-for="word in words"
+      :key="word.key"
       aria-hidden="true"
-      class="inline-block will-change-transform transition-[opacity,filter,transform] ease-out"
-      :style="[
-        getItemStyle(index),
-        active
-          ? { opacity: 1, filter: 'blur(0px)', transform: 'translateY(0px)' }
-          : { opacity: 0, filter: 'blur(12px)', transform: 'translateY(10px)' },
-      ]"
+      class="inline-block whitespace-nowrap"
     >
-      {{ item.content }}
+      <span
+        v-for="character in word.characters"
+        :key="character.key"
+        data-blur-reveal-item
+        class="inline-block"
+        :style="letterSpacingStyle"
+      >
+        {{ character.content }}
+      </span>
+      <span
+        v-if="word.hasTrailingSpace"
+        data-blur-reveal-item
+        class="inline-block"
+      >
+        &nbsp;
+      </span>
     </span>
-  </span>
+  </component>
 </template>

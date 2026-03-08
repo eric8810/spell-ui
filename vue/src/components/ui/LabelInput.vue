@@ -33,20 +33,23 @@ type RingColor =
 interface Props {
   label?: string
   ringColor?: RingColor
+  containerClass?: string
   type?: string
+  placeholder?: string
   class?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
   label: '',
   ringColor: 'muted',
+  containerClass: '',
   type: 'text',
+  placeholder: '',
   class: '',
 })
 
 const attrs = useAttrs()
 const visible = ref(false)
-const value = ref('')
 
 const inputAttrs = computed(() => {
   const next = { ...attrs }
@@ -92,32 +95,32 @@ const inputType = computed(() => {
 </script>
 
 <template>
-  <div :class="cn('group relative w-full', props.class)">
+  <div :class="cn('group relative w-full', props.class, props.containerClass)">
     <input
-      v-model="value"
       v-bind="inputAttrs"
       :type="inputType"
-      placeholder=" "
+      :placeholder="props.placeholder"
       :class="
         cn(
-          'peer block h-10 w-full rounded-lg border bg-background px-3.5 text-sm text-primary outline-none transition-shadow focus:ring-2 dark:border-neutral-700/75 dark:bg-neutral-950',
+          'peer block h-10 w-full rounded-lg border px-3.5 text-sm text-primary outline-none focus:ring-2 dark:border-neutral-700/75 dark:bg-neutral-950 autofill:shadow-[inset_0_0_0px_1000px_var(--color-background)]',
           props.type === 'password' && 'pr-9',
           ringClass,
         )
       "
     >
-    <label class="pointer-events-none absolute inset-y-0 left-[7px] my-auto block h-fit origin-top-left bg-white px-2 text-sm text-muted-foreground transition-transform duration-200 peer-focus:-translate-y-[19px] peer-focus:scale-[.8] peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 dark:bg-neutral-950">
+    <label class="pointer-events-none absolute inset-y-0 left-[7px] my-auto block h-fit origin-top-left bg-white px-2 text-sm text-muted-foreground text-nowrap -translate-y-[19px] scale-[.8] transition-transform duration-200 peer-focus:-translate-y-[19px] peer-focus:scale-[.8] peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 dark:bg-neutral-950">
       {{ props.label }}
     </label>
     <button
       v-if="props.type === 'password'"
       type="button"
-      class="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md text-muted-foreground/80 transition-colors hover:text-foreground"
+      class="text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md transition-[color,box-shadow] outline-none focus:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
       :aria-label="visible ? 'Hide password' : 'Show password'"
+      :aria-pressed="visible"
       @click="visible = !visible"
     >
-      <EyeOff v-if="visible" :size="16" />
-      <Eye v-else :size="16" />
+      <EyeOff v-if="visible" :size="16" aria-hidden="true" />
+      <Eye v-else :size="16" aria-hidden="true" />
     </button>
   </div>
 </template>

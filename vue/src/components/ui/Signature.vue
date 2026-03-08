@@ -146,7 +146,7 @@ const observeVisibility = () => {
         resetAnimation()
       }
     },
-    { threshold: 0.2 },
+    { threshold: 0 },
   )
 
   observer.observe(svgRef.value)
@@ -180,6 +180,7 @@ watch(
     observeVisibility()
 
     if (!props.inView) {
+      resetAnimation()
       startAnimation()
     }
   },

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, ref, useSlots, watch } from 'vue'
+import { animate } from 'motion'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, useSlots, watch } from 'vue'
 import { cn } from '@/lib/utils'
 
 const props = defineProps({
@@ -27,39 +28,90 @@ const emit = defineEmits<{
 }>()
 
 const slots = useSlots()
+const checkPathRef = ref<SVGPathElement | null>(null)
+const strikeRef = ref<HTMLElement | null>(null)
 const checked = ref(props.modelValue ?? props.defaultChecked)
 const isControlled = computed(() => props.modelValue !== undefined)
 
+let strikeAnimation: ReturnType<typeof animate> | null = null
+
+const stopStrikeAnimation = () => {
+  if (strikeAnimation) {
+    strikeAnimation.stop()
+    strikeAnimation = null
+  }
+}
+
+const syncDecorations = (value: boolean) => {
+  stopStrikeAnimation()
+
+  if (checkPathRef.value) {
+    checkPathRef.value.style.strokeDashoffset = value ? '0' : '14'
+    checkPathRef.value.style.opacity = value ? '1' : '0'
+  }
+
+  if (strikeRef.value) {
+    strikeRef.value.style.width = value ? '100%' : '0%'
+    strikeRef.value.style.opacity = value ? '1' : '0'
+  }
+}
+
+const animateStrike = async (value: boolean) => {
+  await nextTick()
+
+  if (!strikeRef.value) {
+    return
+  }
+
+  stopStrikeAnimation()
+  strikeAnimation = animate(
+    strikeRef.value,
+    { width: value ? '100%' : '0%', opacity: value ? 1 : 0 },
+    { type: 'spring', duration: 0.4, bounce: 0.2 },
+  )
+}
+
 watch(
   () => props.modelValue,
-  (value) => {
+  async (value) => {
     if (value !== undefined) {
       checked.value = value
+      await animateStrike(value)
     }
   },
 )
 
 watch(
   () => props.defaultChecked,
-  (value) => {
+  async (value) => {
     if (!isControlled.value) {
       checked.value = value
+      await animateStrike(value)
     }
   },
 )
 
-const toggle = () => {
+const toggle = async () => {
   const nextChecked = !checked.value
 
   if (!isControlled.value) {
     checked.value = nextChecked
   }
 
+  await animateStrike(nextChecked)
   emit('update:modelValue', nextChecked)
   emit('checkedChange', nextChecked)
 }
 
 const showSlot = computed(() => Boolean(slots.default))
+
+onMounted(() => {
+  syncDecorations(checked.value)
+})
+
+onBeforeUnmount(() => {
+  stopStrikeAnimation()
+})
 </script>
 
 <template>
@@ -81,12 +133,13 @@ const showSlot = computed(() => Boolean(slots.default))
             : 'border-muted-foreground/40 bg-transparent hover:border-muted-foreground/60',
         )
       "
-    >
-      <svg viewBox="0 0 20 20" class="size-full text-background">
-        <path
-          d="M 0 4.5 L 3.182 8 L 10 0"
-          fill="transparent"
-          stroke="currentColor"
+      >
+        <svg viewBox="0 0 20 20" class="size-full text-background">
+          <path
+            ref="checkPathRef"
+            d="M 0 4.5 L 3.182 8 L 10 0"
+            fill="transparent"
+            stroke="currentColor"
           stroke-width="1.5"
           stroke-linecap="round"
           stroke-linejoin="round"
@@ -116,12 +169,8 @@ const showSlot = computed(() => Boolean(slots.default))
         <template v-else>{{ props.title }}</template>
       </span>
       <span
-        class="absolute left-0 top-1/2 h-[1.5px] -translate-y-1/2 bg-muted-foreground"
-        :style="{
-          width: checked ? '100%' : '0px',
-          opacity: checked ? 1 : 0,
-          transition: 'width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
-        }"
+        ref="strikeRef"
+        class="absolute left-0 top-1/2 h-[1.5px] w-0 -translate-y-1/2 origin-left bg-muted-foreground opacity-0"
       />
     </div>
   </div>

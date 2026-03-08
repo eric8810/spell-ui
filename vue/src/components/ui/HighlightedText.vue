@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { animate, inView } from 'motion'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { cn } from '@/lib/utils'
 
 type From = 'left' | 'right' | 'top' | 'bottom'
@@ -20,69 +21,163 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const rootRef = ref<HTMLElement | null>(null)
-const isVisible = ref(!props.inView)
-let observer: IntersectionObserver | null = null
+const overlayRef = ref<HTMLElement | null>(null)
 
-const hiddenTransform = computed(() => {
-  switch (props.from) {
-    case 'left':
-      return 'translateX(-100%)'
-    case 'right':
-      return 'translateX(100%)'
-    case 'top':
-      return 'translateY(-100%)'
-    case 'bottom':
-    default:
-      return 'translateY(100%)'
+let stopInView: VoidFunction | null = null
+let animation: ReturnType<typeof animate> | null = null
+let hasPlayed = false
+
+const hiddenTarget = computed(() =>
+  props.from === 'left'
+    ? { x: '-100%' }
+    : props.from === 'right'
+      ? { x: '100%' }
+      : props.from === 'top'
+        ? { y: '-100%' }
+        : { y: '100%' },
+)
+
+const visibleTarget = computed(() => (
+  props.from === 'left' || props.from === 'right'
+    ? { x: '0%' }
+    : { y: '0%' }
+))
+
+const stopAnimation = () => {
+  if (animation) {
+    animation.stop()
+    animation = null
   }
-})
+}
 
-const overlayStyle = computed(() => ({
-  transform: isVisible.value ? 'translate3d(0, 0, 0)' : hiddenTransform.value,
-  transitionDelay: `${props.delay}s`,
-}))
+const applyState = async (state: 'hidden' | 'visible') => {
+  await nextTick()
 
-onMounted(() => {
-  if (!props.inView || !rootRef.value) {
-    isVisible.value = true
+  if (!overlayRef.value) {
     return
   }
 
-  observer = new IntersectionObserver(
-    (entries) => {
-      const entry = entries[0]
+  stopAnimation()
+  animation = animate(
+    overlayRef.value,
+    state === 'visible' ? visibleTarget.value : hiddenTarget.value,
+    {
+      type: 'spring',
+      stiffness: 300,
+      damping: 30,
+      delay: state === 'visible' ? props.delay : 0,
+    },
+  )
+}
 
-      if (!entry) {
+const syncHiddenState = () => {
+  stopAnimation()
+
+  if (!overlayRef.value) {
+    return
+  }
+
+  if (props.from === 'left') {
+    overlayRef.value.style.transform = 'translate3d(-100%, 0, 0)'
+    return
+  }
+
+  if (props.from === 'right') {
+    overlayRef.value.style.transform = 'translate3d(100%, 0, 0)'
+    return
+  }
+
+  if (props.from === 'top') {
+    overlayRef.value.style.transform = 'translate3d(0, -100%, 0)'
+    return
+  }
+
+  overlayRef.value.style.transform = 'translate3d(0, 100%, 0)'
+}
+
+const reveal = async () => {
+  syncHiddenState()
+  await applyState('visible')
+}
+
+const hide = async () => {
+  await applyState('hidden')
+}
+
+const setupViewportObserver = async () => {
+  stopInView?.()
+  stopInView = null
+
+  if (!props.inView) {
+    hasPlayed = false
+    return
+  }
+
+  await nextTick()
+
+  if (!rootRef.value) {
+    return
+  }
+
+  stopInView = inView(
+    rootRef.value,
+    () => {
+      if (props.once && hasPlayed) {
         return
       }
 
-      if (entry.isIntersecting) {
-        isVisible.value = true
-        if (props.once) {
-          observer?.disconnect()
-          observer = null
-        }
-      } else if (!props.once) {
-        isVisible.value = false
+      hasPlayed = true
+      void reveal()
+
+      if (props.once) {
+        return
+      }
+
+      return () => {
+        void hide()
       }
     },
-    { threshold: 0.25 },
+    { amount: 0 },
   )
+}
 
-  observer.observe(rootRef.value)
+watch(
+  () => [props.from, props.delay, props.inView, props.once],
+  async () => {
+    syncHiddenState()
+
+    if (props.inView) {
+      await setupViewportObserver()
+      return
+    }
+
+    await reveal()
+  },
+)
+
+onMounted(async () => {
+  syncHiddenState()
+
+  if (props.inView) {
+    await setupViewportObserver()
+    return
+  }
+
+  await reveal()
 })
 
 onBeforeUnmount(() => {
-  observer?.disconnect()
-  observer = null
+  stopInView?.()
+  stopInView = null
+  stopAnimation()
 })
 </script>
 
 <template>
   <span ref="rootRef" :class="cn('relative inline-flex overflow-hidden align-baseline', props.class)">
     <span
-      class="absolute inset-0 -left-[0.15em] -right-[0.18em] z-0 bg-black transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] dark:bg-white"
-      :style="overlayStyle"
+      ref="overlayRef"
+      class="absolute inset-0 -left-[0.15em] -right-[0.18em] z-0 bg-black will-change-transform dark:bg-white"
     />
     <span class="relative z-10 pl-[0.15em] pr-[0.18em] text-white mix-blend-difference">
       <slot />

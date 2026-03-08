@@ -163,10 +163,11 @@ const observeVisibility = () => {
           observer = null
         }
       } else if (!props.once) {
-        resetReveal()
+        cancelRevealFrame()
+        isVisible.value = false
       }
     },
-    { threshold: 0.1 },
+    { threshold: 0 },
   )
 
   observer.observe(rootRef.value)

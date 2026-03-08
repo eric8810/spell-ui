@@ -3,11 +3,13 @@ import {
   Comment,
   Fragment,
   Text,
+  computed,
   isVNode,
   onBeforeUnmount,
   onMounted,
   ref,
   useSlots,
+  watch,
   type VNodeChild,
 } from 'vue'
 import { cn } from '@/lib/utils'
@@ -18,6 +20,7 @@ interface Props {
   delay?: number
   class?: string
   inView?: boolean
+  once?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -26,6 +29,7 @@ const props = withDefaults(defineProps<Props>(), {
   delay: 0,
   class: '',
   inView: false,
+  once: true,
 })
 
 const slots = useSlots()
@@ -67,18 +71,19 @@ const extractText = (value: VNodeChild): string => {
   return ''
 }
 
-const content = () => {
+const textContent = computed(() => {
   if (props.text) {
     return props.text
   }
 
   const nodes = slots.default ? slots.default() : []
   return extractText(nodes as VNodeChild[]).replace(/\s+/g, ' ').trim()
-}
+})
 
 const RANDOM_CHARS = '_!X$0-+*#'
 const displayText = ref('')
-const started = ref(false)
+const started = ref(!props.inView && props.delay <= 0)
+const pendingStart = ref(!props.inView && props.delay > 0)
 const phase = ref<'phase1' | 'phase2'>('phase1')
 const step = ref(0)
 
@@ -104,6 +109,12 @@ const clearTimers = () => {
     window.clearInterval(loopTimer)
     loopTimer = null
   }
+}
+
+const resetDisplay = (text: string) => {
+  displayText.value = ' '.repeat(text.length)
+  phase.value = 'phase1'
+  step.value = 0
 }
 
 const runPhase1 = (text: string) => {
@@ -157,47 +168,128 @@ const runPhase2 = (text: string) => {
   clearTimers()
 }
 
-const start = () => {
-  const text = content()
-  displayText.value = ' '.repeat(text.length)
-  phase.value = 'phase1'
-  step.value = 0
-  started.value = true
-
+const startLoop = () => {
   clearTimers()
-  startTimer = window.setTimeout(() => {
-    loopTimer = window.setInterval(() => {
-      if (phase.value === 'phase1') {
-        runPhase1(text)
-        return
-      }
+  loopTimer = window.setInterval(() => {
+    const text = textContent.value
 
-      runPhase2(text)
-    }, props.speed)
-  }, props.delay * 1000)
+    if (phase.value === 'phase1') {
+      runPhase1(text)
+      return
+    }
+
+    runPhase2(text)
+  }, props.speed)
 }
 
-onMounted(() => {
-  if (props.inView && rootRef.value) {
-    observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry?.isIntersecting && !started.value) {
-          start()
-          observer?.disconnect()
-          observer = null
-        }
-      },
-      { threshold: 0.2 },
-    )
-    observer.observe(rootRef.value)
+const scheduleStart = () => {
+  const text = textContent.value
+  resetDisplay(text)
+  clearTimers()
+
+  if (props.delay <= 0) {
+    pendingStart.value = false
+    started.value = true
+    startLoop()
     return
   }
 
-  start()
+  pendingStart.value = true
+  startTimer = window.setTimeout(() => {
+    startTimer = null
+    pendingStart.value = false
+    started.value = true
+    startLoop()
+  }, props.delay * 1000)
+}
+
+const observeVisibility = () => {
+  observer?.disconnect()
+  observer = null
+
+  if (!props.inView || !rootRef.value) {
+    return
+  }
+
+  observer = new IntersectionObserver(
+    ([entry]) => {
+      if (!entry) {
+        return
+      }
+
+      if (entry.isIntersecting) {
+        if (!started.value && !pendingStart.value) {
+          scheduleStart()
+        }
+
+        if (props.once) {
+          observer?.disconnect()
+          observer = null
+        }
+        return
+      }
+
+      if (!props.once && !started.value) {
+        pendingStart.value = false
+        clearTimers()
+      }
+    },
+    { threshold: 0, rootMargin: '-100px' },
+  )
+
+  observer.observe(rootRef.value)
+}
+
+watch(
+  () => [props.inView, props.once],
+  () => {
+    observeVisibility()
+
+    if (!props.inView && !started.value && !pendingStart.value) {
+      scheduleStart()
+    }
+  },
+)
+
+watch(
+  () => textContent.value,
+  (text) => {
+    if (!text) {
+      displayText.value = ''
+      return
+    }
+
+    if (started.value) {
+      resetDisplay(text)
+      startLoop()
+      return
+    }
+
+    if (pendingStart.value) {
+      scheduleStart()
+    }
+  },
+)
+
+onMounted(() => {
+  observeVisibility()
+
+  if (!props.inView) {
+    if (started.value) {
+      resetDisplay(textContent.value)
+      startLoop()
+      return
+    }
+
+    if (!pendingStart.value) {
+      scheduleStart()
+    }
+  }
 })
 
 onBeforeUnmount(() => {
   observer?.disconnect()
+  pendingStart.value = false
   clearTimers()
 })
 </script>

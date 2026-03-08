@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, getCurrentInstance } from 'vue'
 import { cn } from '@/lib/utils'
 
 type Variant =
@@ -62,6 +62,23 @@ const variantMap: Record<Variant, string> = {
   fuchsia: 'text-fuchsia-600 dark:text-fuchsia-400',
 }
 
+const repeatDelay = 1.5
+const animationName = `spell-ui-shimmer-text-${getCurrentInstance()?.uid ?? 'default'}`
+
+const totalDuration = computed(() => props.duration + repeatDelay)
+const holdPercent = computed(() => (props.duration / totalDuration.value) * 100)
+
+const keyframesCss = computed(() => `@keyframes ${animationName} {
+  0% {
+    background-position-x: -100%;
+  }
+
+  ${holdPercent.value}%,
+  100% {
+    background-position-x: 250%;
+  }
+}`)
+
 const shimmerStyle = computed(() => ({
   WebkitTextFillColor: 'transparent',
   background:
@@ -69,9 +86,10 @@ const shimmerStyle = computed(() => ({
   WebkitBackgroundClip: 'text',
   backgroundClip: 'text',
   backgroundRepeat: 'no-repeat',
-  backgroundSize: `${props.spread}% 200%`,
-  animationName: 'spell-ui-shimmer-text',
-  animationDuration: `${props.duration + 1.5}s`,
+  backgroundSize: '50% 200%',
+  backgroundPositionX: '250%',
+  animationName,
+  animationDuration: `${totalDuration.value}s`,
   animationDelay: `${props.delay}s`,
   animationTimingFunction: 'linear',
   animationIterationCount: 'infinite',
@@ -80,6 +98,7 @@ const shimmerStyle = computed(() => ({
 
 <template>
   <div class="group overflow-hidden">
+    <component :is="'style'" v-text="keyframesCss" />
     <div>
       <span
         :class="
@@ -96,16 +115,3 @@ const shimmerStyle = computed(() => ({
     </div>
   </div>
 </template>
-
-<style>
-@keyframes spell-ui-shimmer-text {
-  0% {
-    background-position-x: -100%;
-  }
-
-  55%,
-  100% {
-    background-position-x: 250%;
-  }
-}
-</style>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ScrambleText from '@/demos/shared/ScrambleText.vue'
+import { SpecialText } from '@/components/ui'
 
 interface Props {
   variant?: 'default' | 'speed'
@@ -11,20 +11,28 @@ const props = withDefaults(defineProps<Props>(), {
 </script>
 
 <template>
-  <ScrambleText v-if="props.variant === 'default'" text="SPELL UI" class="text-xl" />
+  <SpecialText v-if="props.variant === 'default'" class="text-xl">
+    SPELL UI
+  </SpecialText>
 
   <div v-else class="flex flex-col gap-4">
     <div class="flex items-center gap-4">
       <span class="w-20 text-sm font-mono text-muted-foreground">FAST:</span>
-      <ScrambleText text="FAST ANIMATION" class="text-lg" :speed="10" />
+      <SpecialText :speed="10" class="text-lg" in-view>
+        FAST ANIMATION
+      </SpecialText>
     </div>
     <div class="flex items-center gap-4">
       <span class="w-20 text-sm font-mono text-muted-foreground">NORMAL:</span>
-      <ScrambleText text="NORMAL SPEED" class="text-lg" :speed="20" />
+      <SpecialText :speed="20" class="text-lg" in-view>
+        NORMAL SPEED
+      </SpecialText>
     </div>
     <div class="flex items-center gap-4">
       <span class="w-20 text-sm font-mono text-muted-foreground">SLOW:</span>
-      <ScrambleText text="SLOW MOTION" class="text-lg" :speed="40" />
+      <SpecialText :speed="40" class="text-lg" in-view>
+        SLOW MOTION
+      </SpecialText>
     </div>
   </div>
 </template>
