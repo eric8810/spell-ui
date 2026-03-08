@@ -31,11 +31,12 @@ const SIDEBAR_WIDTH_ICON = '3rem'
 
 interface Props {
   defaultOpen?: boolean
-  open?: boolean
+  open?: boolean | undefined
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  defaultOpen: true
+  defaultOpen: true,
+  open: undefined
 })
 
 const emit = defineEmits<{
