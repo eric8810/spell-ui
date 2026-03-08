@@ -1,24 +1,16 @@
 <script setup lang="ts">
 import { Music2 } from 'lucide-vue-next'
 import { computed, onBeforeUnmount, ref, useId, watch } from 'vue'
+import { fetchSpotifyData, type SpotifyData } from '@/lib/spotify'
 import { cn } from '@/lib/utils'
 
-interface SpotifyData {
-  title: string
-  artist: string
-  image: string
-  link: string
-  audio?: string
-}
-
 interface Props {
+  apiUrl?: string
   url: string
   class?: string
 }
 
 const props = defineProps<Props>()
-
-const SPOTIFY_ENDPOINT = 'https://talks.superalign.cn/spell-ui/api/spotify'
 
 const data = ref<SpotifyData | null>(null)
 const isLoading = ref(true)
@@ -39,20 +31,14 @@ const stopAudio = () => {
   isPlaying.value = false
 }
 
-const fetchSpotifyData = async () => {
+const loadSpotifyData = async () => {
   const currentRequest = ++requestId.value
   isLoading.value = true
   hasError.value = false
   stopAudio()
 
   try {
-    const response = await fetch(`${SPOTIFY_ENDPOINT}?url=${encodeURIComponent(props.url)}`)
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch Spotify metadata')
-    }
-
-    const payload = (await response.json()) as SpotifyData
+    const payload = await fetchSpotifyData(props.url, props.apiUrl)
 
     if (currentRequest !== requestId.value) {
       return
@@ -104,9 +90,9 @@ const handlePlayPause = async () => {
 }
 
 watch(
-  () => props.url,
+  () => [props.url, props.apiUrl],
   () => {
-    void fetchSpotifyData()
+    void loadSpotifyData()
   },
   { immediate: true },
 )
