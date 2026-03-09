@@ -33,7 +33,16 @@ const strikeRef = ref<HTMLElement | null>(null)
 const checked = ref(props.modelValue ?? props.defaultChecked)
 const isControlled = computed(() => props.modelValue !== undefined)
 
+let checkAnimations: ReturnType<typeof animate>[] = []
 let strikeAnimation: ReturnType<typeof animate> | null = null
+
+const stopCheckAnimations = () => {
+  for (const animation of checkAnimations) {
+    animation.stop()
+  }
+
+  checkAnimations = []
+}
 
 const stopStrikeAnimation = () => {
   if (strikeAnimation) {
@@ -43,17 +52,44 @@ const stopStrikeAnimation = () => {
 }
 
 const syncDecorations = (value: boolean) => {
+  stopCheckAnimations()
   stopStrikeAnimation()
 
   if (checkPathRef.value) {
-    checkPathRef.value.style.strokeDashoffset = value ? '0' : '14'
-    checkPathRef.value.style.opacity = value ? '1' : '0'
+    animate(checkPathRef.value, { pathLength: value ? 1 : 0, opacity: value ? 1 : 0 }, { duration: 0 })
   }
 
   if (strikeRef.value) {
     strikeRef.value.style.width = value ? '100%' : '0%'
     strikeRef.value.style.opacity = value ? '1' : '0'
   }
+}
+
+const animateCheckPath = async (value: boolean) => {
+  await nextTick()
+
+  if (!checkPathRef.value) {
+    return
+  }
+
+  stopCheckAnimations()
+  checkAnimations = [
+    animate(
+      checkPathRef.value,
+      { pathLength: value ? 1 : 0 },
+      {
+        duration: 0.3,
+        ease: 'easeOut',
+      },
+    ),
+    animate(
+      checkPathRef.value,
+      { opacity: value ? 1 : 0 },
+      {
+        duration: 0,
+      },
+    ),
+  ]
 }
 
 const animateStrike = async (value: boolean) => {
@@ -76,6 +112,7 @@ watch(
   async (value) => {
     if (value !== undefined) {
       checked.value = value
+      await animateCheckPath(value)
       await animateStrike(value)
     }
   },
@@ -86,6 +123,7 @@ watch(
   async (value) => {
     if (!isControlled.value) {
       checked.value = value
+      await animateCheckPath(value)
       await animateStrike(value)
     }
   },
@@ -98,6 +136,7 @@ const toggle = async () => {
     checked.value = nextChecked
   }
 
+  await animateCheckPath(nextChecked)
   await animateStrike(nextChecked)
   emit('update:modelValue', nextChecked)
   emit('checkedChange', nextChecked)
@@ -110,6 +149,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  stopCheckAnimations()
   stopStrikeAnimation()
 })
 </script>
@@ -140,21 +180,14 @@ onBeforeUnmount(() => {
             d="M 0 4.5 L 3.182 8 L 10 0"
             fill="transparent"
             stroke="currentColor"
-          stroke-width="1.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          transform="translate(5 6)"
-          :style="{
-            strokeDasharray: 14,
-            strokeDashoffset: checked ? 0 : 14,
-            opacity: checked ? 1 : 0,
-            transitionProperty: 'stroke-dashoffset, opacity',
-            transitionDuration: '0.3s, 0s',
-            transitionTimingFunction: 'ease-out, linear',
-          }"
-        />
-      </svg>
-    </div>
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            transform="translate(5 6)"
+            pathLength="1"
+          />
+        </svg>
+      </div>
 
     <div class="relative">
       <span

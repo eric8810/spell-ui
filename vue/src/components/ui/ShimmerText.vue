@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, getCurrentInstance } from 'vue'
+import { animate } from 'motion'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { cn } from '@/lib/utils'
 
 type Variant =
@@ -63,21 +64,37 @@ const variantMap: Record<Variant, string> = {
 }
 
 const repeatDelay = 1.5
-const animationName = `spell-ui-shimmer-text-${getCurrentInstance()?.uid ?? 'default'}`
+const shimmerRef = ref<HTMLElement | null>(null)
+let shimmerAnimation: ReturnType<typeof animate> | null = null
 
-const totalDuration = computed(() => props.duration + repeatDelay)
-const holdPercent = computed(() => (props.duration / totalDuration.value) * 100)
+const stopAnimation = () => {
+  if (shimmerAnimation) {
+    shimmerAnimation.stop()
+    shimmerAnimation = null
+  }
+}
 
-const keyframesCss = computed(() => `@keyframes ${animationName} {
-  0% {
-    background-position-x: -100%;
+const startAnimation = async () => {
+  stopAnimation()
+  await nextTick()
+
+  if (!shimmerRef.value) {
+    return
   }
 
-  ${holdPercent.value}%,
-  100% {
-    background-position-x: 250%;
-  }
-}`)
+  shimmerRef.value.style.backgroundPositionX = '250%'
+  shimmerAnimation = animate(
+    shimmerRef.value,
+    { backgroundPositionX: ['-100%', '250%'] },
+    {
+      duration: props.duration,
+      delay: props.delay,
+      repeat: Infinity,
+      repeatDelay,
+      ease: 'linear',
+    },
+  )
+}
 
 const shimmerStyle = computed(() => ({
   WebkitTextFillColor: 'transparent',
@@ -88,19 +105,29 @@ const shimmerStyle = computed(() => ({
   backgroundRepeat: 'no-repeat',
   backgroundSize: '50% 200%',
   backgroundPositionX: '250%',
-  animationName,
-  animationDuration: `${totalDuration.value}s`,
-  animationDelay: `${props.delay}s`,
-  animationTimingFunction: 'linear',
-  animationIterationCount: 'infinite',
 }))
+
+watch(
+  () => [props.duration, props.delay],
+  () => {
+    void startAnimation()
+  },
+)
+
+onMounted(() => {
+  void startAnimation()
+})
+
+onBeforeUnmount(() => {
+  stopAnimation()
+})
 </script>
 
 <template>
   <div class="group overflow-hidden">
-    <component :is="'style'" v-text="keyframesCss" />
     <div>
       <span
+        ref="shimmerRef"
         :class="
           cn(
             'inline-block [--shimmer-contrast:rgba(255,255,255,0.6)] dark:[--shimmer-contrast:rgba(0,0,0,0.5)]',

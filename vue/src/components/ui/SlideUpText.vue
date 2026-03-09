@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { animate, inView, stagger } from 'motion'
 import {
   Comment,
   Fragment,
@@ -21,7 +22,12 @@ type StaggerFrom = 'first' | 'last' | 'center'
 interface TransitionOptions {
   duration?: number
   delay?: number
-  ease?: string | [number, number, number, number]
+  ease?: string | [number, number, number, number] | ((value: number) => number)
+  type?: 'tween' | 'spring' | 'keyframes'
+  stiffness?: number
+  damping?: number
+  mass?: number
+  bounce?: number
 }
 
 interface Props {
@@ -73,9 +79,10 @@ const emit = defineEmits<{
 
 const slots = useSlots()
 const rootRef = ref<HTMLElement | null>(null)
-const isAnimating = ref(false)
-const hasCompleted = ref(false)
-let observer: IntersectionObserver | null = null
+let stopInView: VoidFunction | null = null
+let animation: ReturnType<typeof animate> | null = null
+let sequenceId = 0
+let hasPlayed = false
 
 const extractRawText = (value: VNodeChild): string => {
   if (Array.isArray(value)) {
@@ -113,17 +120,9 @@ const extractRawText = (value: VNodeChild): string => {
   return ''
 }
 
-const normalizeText = (value: string) =>
-  value
-    .replace(/\r\n/g, '\n')
-    .replace(/[ \t]+\n/g, '\n')
-    .replace(/\n[ \t]+/g, '\n')
-    .replace(/\n{2,}/g, '\n')
-    .trim()
-
 const textContent = computed(() => {
   const slotNodes = slots.default ? slots.default() : []
-  return normalizeText(extractRawText(slotNodes as VNodeChild[]))
+  return extractRawText(slotNodes as VNodeChild[])
 })
 
 const splitIntoCharacters = (text: string) => {
@@ -217,153 +216,168 @@ const groups = computed<Group[]>(() => {
   })
 })
 
-const totalItems = computed(() => {
-  if (props.split === 'characters') {
-    return groups.value.reduce((count, group) => count + group.items.length, 0)
+const getItems = () =>
+  Array.from(rootRef.value?.querySelectorAll<HTMLElement>('[data-slide-up-item]') ?? [])
+
+const stopAnimation = () => {
+  if (animation) {
+    animation.stop()
+    animation = null
   }
-
-  return groups.value.length
-})
-
-const lastItemKey = computed(() => {
-  const lastGroup = groups.value[groups.value.length - 1]
-
-  if (!lastGroup) {
-    return ''
-  }
-
-  const lastItem = lastGroup.items[lastGroup.items.length - 1]
-  return lastItem?.key ?? ''
-})
-
-const resolveEasing = (ease: TransitionOptions['ease']) => {
-  if (Array.isArray(ease) && ease.length === 4) {
-    return `cubic-bezier(${ease.join(',')})`
-  }
-
-  return ease ?? 'ease'
 }
 
-const transitionDuration = computed(() => props.transition.duration ?? 0.5)
-const transitionDelay = computed(() => props.transition.delay ?? 0)
-const transitionEase = computed(() => resolveEasing(props.transition.ease))
+const syncHiddenState = () => {
+  stopAnimation()
 
-const getStaggerDelay = (index: number) => {
-  if (!totalItems.value) {
-    return 0
+  for (const item of getItems()) {
+    item.style.transform = 'translateY(100%)'
   }
-
-  if (props.from === 'last') {
-    return (totalItems.value - 1 - index) * props.stagger
-  }
-
-  if (props.from === 'center') {
-    const center = Math.floor(totalItems.value / 2)
-    return Math.abs(center - index) * props.stagger
-  }
-
-  return index * props.stagger
 }
 
-const getItemStyle = (index: number) => ({
-  transform: isAnimating.value ? 'translateY(0%)' : 'translateY(100%)',
-  transitionProperty: 'transform',
-  transitionDuration: `${transitionDuration.value}s`,
-  transitionTimingFunction: transitionEase.value,
-  transitionDelay: isAnimating.value
-    ? `${props.delay + transitionDelay.value + getStaggerDelay(index)}s`
-    : '0s',
-})
+const createAnimationOptions = () => {
+  const transitionDelay = props.transition.delay ?? 0
 
-const startAnimation = () => {
-  hasCompleted.value = false
-  isAnimating.value = true
+  return {
+    ...props.transition,
+    duration: props.transition.duration ?? 0.5,
+    ease: props.transition.ease ?? [0.625, 0.05, 0, 1],
+    delay: stagger(props.stagger, {
+      from: props.from,
+      startDelay: props.delay + transitionDelay,
+    }),
+  }
+}
+
+const animateIn = async () => {
+  const currentSequence = ++sequenceId
+  stopAnimation()
+  await nextTick()
+
+  if (sequenceId !== currentSequence) {
+    return
+  }
+
+  syncHiddenState()
+  const items = getItems()
+
   emit('start')
-}
 
-const reset = () => {
-  isAnimating.value = false
-  hasCompleted.value = false
-}
+  if (!items.length) {
+    emit('complete')
+    return
+  }
 
-const scheduleStartAnimation = () => {
-  window.requestAnimationFrame(() => {
-    startAnimation()
+  animation = animate(
+    items,
+    { transform: ['translateY(100%)', 'translateY(0%)'] } as any,
+    createAnimationOptions() as any,
+  )
+
+  animation.then(() => {
+    if (sequenceId === currentSequence) {
+      emit('complete')
+    }
   })
 }
 
-const handleTransitionEnd = () => {
-  if (!isAnimating.value || hasCompleted.value) {
-    return
-  }
-
-  hasCompleted.value = true
-  emit('complete')
+const startAnimation = () => {
+  void animateIn()
 }
 
-const observeVisibility = () => {
-  observer?.disconnect()
-  observer = null
+const reset = async () => {
+  sequenceId += 1
+  stopAnimation()
+  await nextTick()
+  syncHiddenState()
+}
 
-  if (!props.inView || !rootRef.value) {
+const setupViewportObserver = async () => {
+  stopInView?.()
+  stopInView = null
+
+  if (!props.inView) {
+    hasPlayed = false
     return
   }
 
-  observer = new IntersectionObserver(
-    (entries) => {
-      const entry = entries[0]
+  await nextTick()
 
-      if (!entry) {
+  if (!rootRef.value) {
+    return
+  }
+
+  stopInView = inView(
+    rootRef.value,
+    () => {
+      if (props.once && hasPlayed) {
         return
       }
 
-      if (entry.isIntersecting) {
-        startAnimation()
+      hasPlayed = true
+      void animateIn()
 
-        if (props.once) {
-          observer?.disconnect()
-          observer = null
-        }
-      } else if (!props.once) {
-        reset()
+      if (props.once) {
+        return
+      }
+
+      return () => {
+        void reset()
       }
     },
-    { threshold: 0 },
+    { amount: 0 },
   )
-
-  observer.observe(rootRef.value)
 }
 
 onMounted(async () => {
   await nextTick()
+  syncHiddenState()
+  await setupViewportObserver()
 
   if (props.autoStart && !props.inView) {
-    scheduleStartAnimation()
+    startAnimation()
   }
-
-  observeVisibility()
 })
 
 watch(
   () => [props.inView, props.once, props.autoStart],
   async () => {
     await nextTick()
-    observeVisibility()
+    syncHiddenState()
+    await setupViewportObserver()
 
     if (!props.inView) {
       if (props.autoStart) {
-        reset()
-        scheduleStartAnimation()
+        startAnimation()
       } else {
-        reset()
+        await reset()
       }
     }
   },
 )
 
+watch(
+  () => [textContent.value, props.delay, props.stagger, props.from, props.transition],
+  async () => {
+    await nextTick()
+    syncHiddenState()
+
+    if (props.inView) {
+      hasPlayed = false
+      await setupViewportObserver()
+      return
+    }
+
+    if (props.autoStart) {
+      startAnimation()
+    }
+  },
+  { deep: true },
+)
+
 onBeforeUnmount(() => {
-  observer?.disconnect()
-  observer = null
+  stopInView?.()
+  stopInView = null
+  stopAnimation()
 })
 
 defineExpose({
@@ -397,9 +411,8 @@ defineExpose({
         :class="cn('relative overflow-hidden whitespace-pre-wrap', props.charClass)"
       >
         <span
+          data-slide-up-item
           class="inline-block"
-          :style="getItemStyle(item.customIndex)"
-          @transitionend="item.key === lastItemKey ? handleTransitionEnd() : undefined"
         >
           {{ item.text }}
         </span>

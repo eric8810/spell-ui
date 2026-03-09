@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { animate, inView } from 'motion'
 import {
   Comment,
   Fragment,
@@ -40,14 +41,12 @@ const props = withDefaults(defineProps<Props>(), {
 
 const slots = useSlots()
 const rootRef = ref<HTMLElement | null>(null)
-const isVisible = ref(false)
 const randomizedDelays = ref<number[]>([])
 
-let observer: IntersectionObserver | null = null
-let revealFrameId: number | null = null
+let stopInView: VoidFunction | null = null
+let animations: ReturnType<typeof animate>[] = []
 
-const expoOutEasing =
-  'linear(0, 0.5 10%, 0.75 20%, 0.875 30%, 0.9375 40%, 0.9688 50%, 0.9844 60%, 0.9922 70%, 0.9961 80%, 0.998 90%, 1)'
+const expoOutEasing = (value: number) => (value === 1 ? 1 : 1 - Math.pow(2, -10 * value))
 
 const extractRawText = (value: VNodeChild): string => {
   if (Array.isArray(value)) {
@@ -85,19 +84,13 @@ const extractRawText = (value: VNodeChild): string => {
   return ''
 }
 
-const normalizeSlotText = (value: string) =>
-  value
-    .replace(/\r\n/g, '\n')
-    .replace(/[ \t]*\n+[ \t]*/g, ' ')
-    .trim()
-
 const textContent = computed(() => {
   if (props.text !== undefined) {
     return props.text
   }
 
   const slotNodes = slots.default ? slots.default() : []
-  return normalizeSlotText(extractRawText(slotNodes as VNodeChild[]))
+  return extractRawText(slotNodes as VNodeChild[])
 })
 
 const elements = computed<TextElement[]>(() => {
@@ -118,63 +111,77 @@ const refreshRandomizedDelays = () => {
   randomizedDelays.value = elements.value.map(() => props.delay + Math.random() * 0.2 + Math.random() * 0.03)
 }
 
-const cancelRevealFrame = () => {
-  if (revealFrameId !== null) {
-    window.cancelAnimationFrame(revealFrameId)
-    revealFrameId = null
+const getItems = () =>
+  Array.from(rootRef.value?.querySelectorAll<HTMLElement>('[data-randomized-text-item]') ?? [])
+
+const stopAnimations = () => {
+  for (const animation of animations) {
+    animation.stop()
+  }
+
+  animations = []
+}
+
+const resetReveal = async () => {
+  await nextTick()
+  stopAnimations()
+
+  for (const item of getItems()) {
+    animate(item, { opacity: 0 }, { duration: 0 })
   }
 }
 
-const resetReveal = () => {
-  cancelRevealFrame()
-  isVisible.value = false
+const startReveal = async () => {
+  await resetReveal()
+
+  for (const [index, item] of getItems().entries()) {
+    animations.push(
+      animate(
+        item,
+        { opacity: [0, 1] },
+        {
+          duration: 1.2,
+          delay: randomizedDelays.value[index] ?? props.delay,
+          ease: expoOutEasing,
+        },
+      ),
+    )
+  }
 }
 
-const scheduleReveal = () => {
-  cancelRevealFrame()
-  revealFrameId = window.requestAnimationFrame(() => {
-    isVisible.value = true
-    revealFrameId = null
-  })
-}
+const observeVisibility = async () => {
+  stopInView?.()
+  stopInView = null
 
-const observeVisibility = () => {
-  observer?.disconnect()
-  observer = null
-
-  if (!props.inView || !rootRef.value) {
+  if (!props.inView) {
     return
   }
 
-  observer = new IntersectionObserver(
-    (entries) => {
-      const entry = entries[0]
+  await nextTick()
 
-      if (!entry) {
+  if (!rootRef.value) {
+    return
+  }
+
+  stopInView = inView(
+    rootRef.value,
+    () => {
+      void startReveal()
+
+      if (props.once) {
         return
       }
 
-      if (entry.isIntersecting) {
-        resetReveal()
-        scheduleReveal()
-
-        if (props.once) {
-          observer?.disconnect()
-          observer = null
-        }
-      } else if (!props.once) {
-        cancelRevealFrame()
-        isVisible.value = false
+      return () => {
+        void resetReveal()
       }
     },
-    { threshold: 0 },
+    { amount: 0 },
   )
-
-  observer.observe(rootRef.value)
 }
 
 watch(
-  [() => elements.value.length, () => props.delay],
+  [() => elements.value.length, () => props.delay, () => props.split],
   () => {
     refreshRandomizedDelays()
   },
@@ -185,27 +192,43 @@ watch(
   () => [props.inView, props.once],
   async () => {
     await nextTick()
-    resetReveal()
-    observeVisibility()
+    await resetReveal()
+    await observeVisibility()
 
     if (!props.inView) {
-      scheduleReveal()
+      void startReveal()
     }
   },
 )
 
+watch(
+  () => textContent.value,
+  async () => {
+    refreshRandomizedDelays()
+    await resetReveal()
+
+    if (props.inView) {
+      await observeVisibility()
+      return
+    }
+
+    void startReveal()
+  },
+)
+
 onMounted(() => {
-  observeVisibility()
+  void resetReveal()
+  void observeVisibility()
 
   if (!props.inView) {
-    scheduleReveal()
+    void startReveal()
   }
 })
 
 onBeforeUnmount(() => {
-  observer?.disconnect()
-  observer = null
-  cancelRevealFrame()
+  stopInView?.()
+  stopInView = null
+  stopAnimations()
 })
 </script>
 
@@ -217,16 +240,12 @@ onBeforeUnmount(() => {
     :style="{ display: 'inline-block', wordBreak: 'break-word' }"
   >
     <span
-      v-for="(element, index) in elements"
+      v-for="element in elements"
       :key="element.key"
+      data-randomized-text-item
       :class="props.split === 'words' ? 'mr-[0.25em]' : undefined"
       :style="{
-        opacity: isVisible ? 1 : 0,
         display: props.split === 'words' ? 'inline-block' : 'inline',
-        transitionProperty: 'opacity',
-        transitionDuration: '1.2s',
-        transitionDelay: `${randomizedDelays[index] ?? props.delay}s`,
-        transitionTimingFunction: expoOutEasing,
       }"
     >
       {{ element.content }}
